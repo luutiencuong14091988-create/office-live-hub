@@ -1,0 +1,15 @@
+{
+  "sale": [
+    { "id": "8789955c-ce62-494a-bf7d-75d004278533", "name": "Lê Thi Anh Thư" },
+    { "id": "50e588e4-6116-4871-bdd5-ea7e5498ec0c", "name": "Thùy Hương" },
+    { "id": "05270ba8-067e-4328-9084-e555663b6475", "name": "Hương Thảo" },
+    { "id": "77f3ff69-0c95-49b5-bfb0-128fe5dcecfa", "name": "Linh Têrêxa" },
+    { "id": "649043b9-9606-40e8-bce2-aee2cd6d8467", "name": "Thanh Tâm" }
+  ],
+  "cskh": [
+    { "id": "1dcc443f-cbbd-4954-8e5e-49a761b4e873", "name": "Hoài" },
+    { "id": "6aa0f978-87fb-45a0-bac6-1d8f0356cb97", "name": "Hân" },
+    { "id": "be0a9828-f64f-4461-94c2-b846965a63bb", "name": "Ngọc" },
+    { "id": "561342fd-1117-4587-850e-d229f899b9f2", "name": "Hoài Ly" }
+  ]
+}

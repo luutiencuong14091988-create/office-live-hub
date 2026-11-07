@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Office Live Hub</title>
+<meta name="robots" content="noindex, nofollow">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="https://unpkg.com/lucide@0.452.0/dist/umd/lucide.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12151c; --panel:#1a1d26; --panel2:#20242f; --panel3:#262b38; --line:#2c3240;
+    --text:#e8eaf0; --muted:#8a92a6; --sale:#22c55e; --sale2:#f97316; --cskh:#3b82f6; --warn:#f5b73b; --rest:#6b7280;
+  }
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Be Vietnam Pro',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+  .mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+  .muted{color:var(--muted)}
+  .panel{background:var(--panel)}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:14px}
+  .scroll-thin{scrollbar-width:thin;scrollbar-color:#343a4a transparent}
+  .scroll-thin::-webkit-scrollbar{width:6px}.scroll-thin::-webkit-scrollbar-thumb{background:#343a4a;border-radius:9px}
+  svg.lucide{width:1em;height:1em;stroke-width:2.2}
+
+  /* ---------- top bar ---------- */
+  .kpi{background:linear-gradient(180deg,#20242f,#1b1f29);border:1px solid var(--line);border-radius:14px;padding:6px 16px 6px 8px;display:flex;align-items:center;gap:10px;flex:none;white-space:nowrap}
+  .kpi .ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex:none}
+  .kpi .val{font-weight:800;font-size:20px;line-height:1.1;letter-spacing:-.01em;white-space:nowrap}
+  .btn-glow{position:relative;border-radius:12px;font-weight:700;font-size:13px;padding:9px 14px;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:transform .15s, box-shadow .2s, filter .2s}
+  .btn-glow:hover{transform:translateY(-1px);filter:brightness(1.08)}
+  .btn-glow:active{transform:translateY(1px) scale(.98)}
+  .btn-sale{background:linear-gradient(135deg,#22c55e,#f59e0b);color:#0b1a10;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 6px 22px -6px rgba(34,197,94,.7)}
+  .btn-cskh{background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 6px 22px -6px rgba(59,130,246,.75)}
+  .icon-btn{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line);font-size:18px;color:#cbd2e0;transition:all .15s}
+  .icon-btn:hover{background:var(--panel3);color:#fff}
+  .icon-btn.on{color:#f5b73b;border-color:rgba(245,183,59,.45);box-shadow:0 0 16px -4px rgba(245,183,59,.6)}
+  .live-dot{width:8px;height:8px;border-radius:99px;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.7);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.6)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+
+  /* ---------- left sidebar ---------- */
+  .stat-chip{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+  .tab{flex:1;padding:8px 6px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+  .tab.active{background:var(--panel3);color:#fff;box-shadow:0 0 0 1px var(--line) inset}
+  .staff-row{display:flex;gap:12px;padding:11px 10px;border-radius:14px;cursor:pointer;transition:background .15s;position:relative}
+  .staff-row:hover{background:#1f2330}
+  .staff-row.sel{background:#232838;box-shadow:0 0 0 1px rgba(245,183,59,.4) inset}
+  .staff-row.flash{animation:rowflash 1.6s ease}
+  @keyframes rowflash{0%{background:rgba(34,197,94,.35)}100%{background:transparent}}
+  .avatar{width:46px;height:46px;border-radius:999px;flex:none;position:relative;display:grid;place-items:center;overflow:visible}
+  .avatar svg{width:46px;height:46px;border-radius:999px}
+  .avatar img{border-radius:999px;object-fit:cover;display:block;background:#2a2f3c}
+  .av-mini{position:relative;flex:none;width:24px;height:24px}.av-mini img,.av-mini svg{width:24px!important;height:24px!important;border-radius:999px}
+  .av-mini .sd{position:absolute;right:-2px;bottom:-2px;width:9px;height:9px;border-radius:99px;border:2px solid var(--panel2)}
+  .avatar .sdot{position:absolute;right:-1px;bottom:-1px;width:13px;height:13px;border-radius:99px;border:3px solid var(--panel)}
+  .kbar{height:4px;border-radius:9px;background:#2b3040;overflow:hidden}
+  .kbar>div{height:100%;border-radius:9px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+
+  /* ---------- center ---------- */
+  #viewport{position:absolute;inset:0;overflow:hidden;cursor:grab;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 45%, #262c3c 0%, rgba(20,23,31,0) 70%),
+      radial-gradient(circle, rgba(255,255,255,.05) 1px, transparent 1.4px) 0 0/22px 22px,
+      #14171f}
+  #viewport.dragging{cursor:grabbing}
+  #stage{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+  #stage.smooth{transition:transform .85s cubic-bezier(.2,.8,.2,1)}
+  #scene{display:block;overflow:visible}
+  #scene text{font-family:'Be Vietnam Pro',system-ui,sans-serif}
+  #overlay{position:absolute;inset:0;pointer-events:none}
+
+  .tag{position:absolute;transform:translate(-50%,-100%) scale(var(--inv,1));transform-origin:50% 100%;pointer-events:auto;cursor:pointer;
+    background:rgba(17,20,28,.9);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:12px;font-weight:600;padding:4px 10px 4px 8px;border-radius:999px;white-space:nowrap;
+    display:flex;align-items:center;gap:6px;box-shadow:0 6px 18px -6px rgba(0,0,0,.7);transition:opacity .3s, background .2s}
+  .tag:hover{background:rgba(32,36,48,.96)}
+  .tag .d{width:8px;height:8px;border-radius:99px;flex:none}
+  .tag.dim,.zone-pill.dim{opacity:.15}
+  .tag.hide{display:none}
+  #stage.far .tag .o-wrap{display:none}
+  #stage.far .tag{font-size:11px;padding:3px 8px 3px 7px}
+  .zone-pill{position:absolute;transform:translate(-50%,-100%) scale(var(--inv,1));transform-origin:50% 100%;background:rgba(17,20,28,.82);border:1px solid rgba(255,255,255,.1);
+    color:#e5e7eb;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;display:flex;gap:6px;align-items:center;letter-spacing:.02em}
+  .bubble{position:absolute;transform:translate(-50%,-100%) scale(var(--inv,1));transform-origin:50% 100%;pointer-events:none;z-index:5;animation:bubbleLife 5.2s ease forwards}
+  .bubble .in{color:#fff;font-weight:800;font-size:15px;padding:9px 16px;border-radius:16px;white-space:nowrap;position:relative;
+    box-shadow:0 0 0 2px rgba(255,255,255,.25) inset,0 12px 30px -8px rgba(0,0,0,.6),0 0 30px -4px var(--glow)}
+  .bubble .in:after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);border:8px solid transparent;border-bottom:0;border-top-color:var(--tail)}
+  .bubble small{display:block;font-weight:600;font-size:11px;opacity:.9;margin-top:1px}
+  @keyframes bubbleLife{0%{opacity:0;margin-top:20px}8%{opacity:1;margin-top:-6px}14%{margin-top:0}82%{opacity:1;margin-top:-14px}100%{opacity:0;margin-top:-34px}}
+
+  /* characters */
+  .char{cursor:pointer;transition:opacity .35s}
+  .char.dim{opacity:.16}
+  .ceo-point{transform-box:fill-box;transform-origin:100% 100%;animation:ceoPt 2.4s ease-in-out infinite}
+  @keyframes ceoPt{0%,100%{transform:rotate(0)}50%{transform:rotate(-8deg)}}
+  .tag.meet{cursor:default}
+  .char .inner{transform-box:view-box}
+  .char.jump .inner{animation:jump .62s cubic-bezier(.3,1.5,.5,1) 4}
+  @keyframes jump{0%,100%{transform:translateY(0)}45%{transform:translateY(-30px)}}
+  .char .head{animation:bob 3.4s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-1.8px)}}
+  .char.typing .armL{animation:type .32s ease-in-out infinite alternate}
+  .char.typing .armR{animation:type .32s ease-in-out infinite alternate-reverse}
+  @keyframes type{to{transform:translateY(-3px)}}
+  .char .eyes-happy{display:none}.char.happy .eyes-happy{display:inline}.char.happy .eyes-normal{display:none}
+  .char .eyes-normal ellipse{transform-box:fill-box;transform-origin:center;animation:blink 4.6s infinite}
+  @keyframes blink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+  .char.sleepy .eyes-normal ellipse{animation:none;transform:scaleY(.25)}
+  .char .sel-ring{opacity:0;transition:opacity .3s}
+  .char.selected .sel-ring{opacity:1;animation:ringpulse 1.1s ease-in-out infinite}
+  @keyframes ringpulse{50%{stroke-width:6;opacity:.55}}
+  .st-wig{transform-box:fill-box;transform-origin:center;animation:wig .45s ease-in-out infinite}
+  @keyframes wig{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}}
+  .st-float{animation:zz 2.4s ease-in-out infinite}
+  .st-float.b{animation-delay:.8s}
+  @keyframes zz{0%{opacity:0;transform:translate(0,4px)}40%{opacity:1}100%{opacity:0;transform:translate(6px,-12px)}}
+  .st-dot{animation:dotb 1.2s infinite}.st-dot.b{animation-delay:.2s}.st-dot.c{animation-delay:.4s}
+  @keyframes dotb{0%,60%,100%{opacity:.35}30%{opacity:1}}
+  .st-pop{transform-box:fill-box;transform-origin:center;animation:popin .4s cubic-bezier(.3,1.6,.5,1)}
+  @keyframes popin{from{transform:scale(0)}to{transform:scale(1)}}
+  .wave{animation:wave 1.2s ease-out infinite;opacity:0}
+  .wave.b{animation-delay:.4s}
+  @keyframes wave{0%{opacity:.9}100%{opacity:0}}
+  .screen-glow{animation:glow 2.6s ease-in-out infinite}
+  @keyframes glow{50%{opacity:.6}}
+
+  /* dock */
+  .dock{background:rgba(26,29,38,.92);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 40px -12px rgba(0,0,0,.7)}
+  .dock-btn{height:42px;min-width:42px;border-radius:12px;display:grid;place-items:center;color:#c9d0dd;font-size:18px;transition:all .15s;position:relative}
+  .dock-btn:hover{background:#272c3a;color:#fff}
+  .dock-btn.active{background:rgba(245,183,59,.12);color:#f5b73b;box-shadow:0 0 0 1px rgba(245,183,59,.55) inset}
+  .dock-btn[data-tip]:hover:after{content:attr(data-tip);position:absolute;bottom:52px;left:50%;transform:translateX(-50%);background:#0d1017;color:#fff;font-size:11.5px;font-weight:600;padding:5px 9px;border-radius:8px;white-space:nowrap;border:1px solid var(--line);pointer-events:none}
+  .sep{width:1px;height:26px;background:var(--line);margin:0 4px}
+  .menu{background:#1c2029;border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 40px -10px rgba(0,0,0,.7)}
+  .menu button{display:flex;width:100%;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:13px;font-weight:600;color:#d1d5db;text-align:left}
+  .menu button:hover{background:#272c3a}
+  .menu button.on{color:#f5b73b}
+
+  /* right */
+  .mini{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:10px 10px 9px}
+  .chip{display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);font-size:12.5px;font-weight:600;color:#aab2c3;white-space:nowrap;transition:all .15s}
+  .chip:hover{color:#fff}
+  .chip.on{border-color:rgba(245,183,59,.6);color:#f5b73b;background:rgba(245,183,59,.08)}
+  .feed-item{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:11px 13px}
+  .feed-item.order{border-color:rgba(34,197,94,.45);background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(32,36,47,1) 60%)}
+  .feed-item.order.cskh{border-color:rgba(59,130,246,.5);background:linear-gradient(135deg,rgba(59,130,246,.14),rgba(32,36,47,1) 60%)}
+  .feed-item.enter{animation:feedIn .55s cubic-bezier(.2,.9,.3,1.2)}
+  @keyframes feedIn{from{opacity:0;transform:translateY(-12px) scale(.97)}to{opacity:1;transform:none}}
+  .fi{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:none;font-size:14px;background:#2a2f3c;color:#aeb6c6}
+  .badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:99px;letter-spacing:.02em}
+  .b-sale{background:rgba(34,197,94,.14);color:#4ade80}
+  .b-cskh{background:rgba(59,130,246,.16);color:#7fb0ff}
+
+  /* footer ticker */
+  .ticker{height:40px;background:linear-gradient(90deg,#171a22,#1b1f29);border-top:1px solid var(--line);overflow:hidden;position:relative}
+  .ticker-track{display:inline-flex;white-space:nowrap;animation:marquee var(--dur,60s) linear infinite;will-change:transform}
+  .ticker:hover .ticker-track{animation-play-state:paused}
+  .ticker-track span.it{padding:0 26px;font-size:13.5px;font-weight:500;color:#d6dbe6;display:inline-flex;align-items:center;gap:6px}
+  .ticker-track span.it b{color:#fff}
+  .ticker-track span.it .amt{color:#4ade80;font-weight:800}
+  .ticker-track span.sepd{color:#3d4456}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* toast */
+  .toast{background:linear-gradient(135deg,rgba(26,29,38,.97),rgba(34,39,52,.97));border:1px solid rgba(34,197,94,.5);border-radius:16px;padding:12px 16px;box-shadow:0 18px 40px -10px rgba(0,0,0,.7),0 0 24px -6px rgba(34,197,94,.5);animation:toastIn .5s cubic-bezier(.2,.9,.3,1.3)}
+  .toast.cskh{border-color:rgba(59,130,246,.55);box-shadow:0 18px 40px -10px rgba(0,0,0,.7),0 0 24px -6px rgba(59,130,246,.6)}
+  .toast.out{animation:toastOut .4s ease forwards}
+  @keyframes toastIn{from{opacity:0;transform:translateY(-16px) scale(.95)}}
+  @keyframes toastOut{to{opacity:0;transform:translateY(-10px)}}
+  .flash-gold{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 50%,rgba(245,183,59,.28),transparent 60%);animation:fg 1.4s ease forwards}
+  @keyframes fg{from{opacity:1}to{opacity:0}}
+  .num-pop{animation:numpop .6s ease}
+  @keyframes numpop{30%{transform:scale(1.08);color:#4ade80}}
+
+  .modal-bg{background:rgba(5,7,12,.65);backdrop-filter:blur(4px)}
+  pre.code{background:#0d1017;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:12px;line-height:1.6;color:#cbd5e1;overflow:auto}
+  .inp{background:#12151c;border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-size:13px;color:#fff;width:100%;outline:none}
+  .inp:focus{border-color:#f5b73b}
+
+  @media (max-width:1023px){
+    body{overflow:auto}
+    #app{height:auto!important;min-height:100%}
+    #mainRow{flex-direction:column}
+    #leftCol,#rightCol{width:100%!important;max-height:none}
+    #center{min-height:72vh}
+  }
+</style>
+</head>
+<body>
+<div id="app" class="flex flex-col h-screen">
+
+  <!-- ================= TOP BAR ================= -->
+  <header class="flex items-center gap-3 px-4 h-[68px] border-b border-[#232836] bg-[#151821] flex-none">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-10 h-10 rounded-xl grid place-items-center text-[22px] flex-none" style="background:linear-gradient(135deg,#f97316,#f5b73b);color:#1a1205;box-shadow:0 6px 20px -6px rgba(249,115,22,.7)">
+        <i data-lucide="building-2"></i>
+      </div>
+      <div class="min-w-0">
+        <div class="font-extrabold text-[17px] leading-tight whitespace-nowrap">🏢 Office Live Hub</div>
+        <div class="text-[11.5px] font-semibold text-amber-400/90 tracking-wide whitespace-nowrap">Phòng Sale &amp; CSKH</div>
+      </div>
+      <div class="mono text-[13px] px-2.5 py-1 rounded-lg bg-[#20242f] border border-[#2c3240] text-slate-300 hidden md:block" id="clock">--:--:--</div>
+      <div class="mono text-[11px] px-2 py-1 rounded-lg border border-[#2c3240] text-slate-400 hidden lg:block" title="Phiên bản giao diện">v07.11-9</div>
+      <div class="hidden xl:flex items-center gap-2 text-[12px] font-bold px-3 py-1.5 rounded-full border border-emerald-500/40 text-emerald-300 bg-emerald-500/10"><span class="live-dot"></span>LIVE · Pancake POS</div>
+    </div>
+
+    <div class="flex-1 flex items-center justify-center gap-2.5 min-w-0 overflow-x-auto scroll-thin">
+      <div class="kpi">
+        <div class="ico" style="background:rgba(34,197,94,.15);color:#4ade80"><i data-lucide="wallet"></i></div>
+        <div class="min-w-0">
+          <div class="text-[11px] muted font-semibold whitespace-nowrap">💰 Doanh thu hôm nay</div>
+          <div class="val mono text-white" id="kRev">0 đ</div>
+        </div>
+      </div>
+      <div class="kpi hidden md:flex">
+        <div class="ico" style="background:rgba(245,183,59,.15);color:#f5b73b"><i data-lucide="package-check"></i></div>
+        <div>
+          <div class="text-[11px] muted font-semibold whitespace-nowrap">📦 Đơn hôm nay</div>
+          <div class="val mono" id="kOrd">0 đơn</div>
+        </div>
+      </div>
+      <div class="kpi hidden md:flex">
+        <div class="ico" style="background:rgba(168,85,247,.15);color:#c084fc"><i data-lucide="target"></i></div>
+        <div>
+          <div class="text-[11px] muted font-semibold whitespace-nowrap">🎯 Đạt mục tiêu ngày</div>
+          <div class="val mono" id="kRoas">0x</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 flex-none">
+      <button class="btn-glow btn-sale" title="Chỉ thử hiệu ứng nổ đơn, không cộng doanh thu" onclick="testEffect()"><span>🎉</span><span class="hidden sm:inline">Test hiệu ứng</span></button>
+      <button class="icon-btn on" id="soundBtn" title="Bật/Tắt âm thanh Ting ting" onclick="toggleSound()"><i data-lucide="volume-2"></i></button>
+      <button class="icon-btn" title="Kết nối Pancake POS" onclick="openModal()"><i data-lucide="plug-zap"></i></button>
+    </div>
+  </header>
+
+  <div id="mainRow" class="flex flex-1 min-h-0">
+
+    <!-- ================= LEFT ================= -->
+    <aside id="leftCol" class="w-[318px] flex-none panel border-r border-[#232836] flex flex-col min-h-0">
+      <div class="px-4 pt-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-[21px] font-bold">Phiên làm việc</h2>
+          <div class="flex items-center gap-1.5 text-[12px] muted"><span class="live-dot"></span>đang nhận dữ liệu</div>
+        </div>
+        <div class="text-[13px] muted mt-0.5" id="staffCount">0 nhân viên</div>
+        <div class="grid grid-cols-3 gap-2 mt-3">
+          <div class="stat-chip"><div class="flex items-center gap-1.5 text-[20px] font-bold"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span id="cActive">0</span></div><div class="text-[11px] muted leading-tight">Đang chốt đơn</div></div>
+          <div class="stat-chip"><div class="flex items-center gap-1.5 text-[20px] font-bold"><span class="w-2 h-2 rounded-full bg-amber-400"></span><span id="cWait">0</span></div><div class="text-[11px] muted leading-tight">Chờ khách</div></div>
+          <div class="stat-chip"><div class="flex items-center gap-1.5 text-[20px] font-bold"><span class="w-2 h-2 rounded-full bg-slate-500"></span><span id="cRest">0</span></div><div class="text-[11px] muted leading-tight">Chưa ra đơn</div></div>
+        </div>
+        <div class="relative mt-3">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 muted text-[15px]"><i data-lucide="search"></i></span>
+          <input id="search" class="inp !pl-9 !py-2.5 !rounded-xl !bg-[#1d2029]" placeholder="Tìm theo tên nhân viên...">
+        </div>
+        <div class="flex gap-1 mt-3 p-1 rounded-xl bg-[#151821] border border-[#262b37]" id="tabs">
+          <button class="tab active" data-tab="sale"><i data-lucide="briefcase"></i>Team Sale <span class="text-[11px] muted" id="tSale"></span></button>
+          <button class="tab" data-tab="cskh"><i data-lucide="headphones"></i>Team CSKH <span class="text-[11px] muted" id="tCskh"></span></button>
+        </div>
+        <div class="flex items-center justify-between mt-3 mb-1 px-1">
+          <div class="text-[11.5px] font-bold tracking-wider muted uppercase" id="teamHead">Team Sale</div>
+          <div class="text-[11.5px] mono text-emerald-400 font-bold" id="teamRev"></div>
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto scroll-thin px-2 pb-3" id="staffList"></div>
+    </aside>
+
+    <!-- ================= CENTER ================= -->
+    <main id="center" class="relative flex-1 min-w-0 overflow-hidden">
+      <div id="viewport">
+        <div id="stage">
+          <svg id="scene" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div id="overlay"></div><div id="bubbles" style="position:absolute;inset:0;pointer-events:none"></div>
+        </div>
+      </div>
+      <canvas id="fx" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+
+      <!-- floating top pills -->
+      <div class="absolute left-4 top-4 flex flex-col gap-2 items-start pointer-events-none">
+        <div class="flex items-center gap-2 px-3.5 py-2 rounded-full text-[13px] font-semibold border border-red-500/40 bg-[#1b1d26]/90 shadow-lg pointer-events-auto cursor-pointer" id="goalPill" onclick="focusPreset('all')">
+          <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span><span id="goalText">Đang tải số liệu POS…</span>
+        </div>
+        <div id="dataBanner" class="hidden"></div>
+      </div>
+      <div class="absolute right-4 top-4 flex items-center gap-2 pointer-events-none">
+        <div class="px-3 py-1.5 rounded-full text-[12px] font-bold bg-[#1b1d26]/90 border border-[#2c3240] flex items-center gap-2"><span class="live-dot"></span><span id="viewName">Toàn cảnh</span></div>
+      </div>
+      <div id="toasts" class="absolute right-4 top-14 flex flex-col gap-2 items-end pointer-events-none z-20"></div>
+
+      <!-- staff card -->
+      <div id="staffCard" class="hidden absolute left-4 bottom-24 w-[290px] card p-4 z-20 shadow-2xl"></div>
+
+      <!-- filter menu -->
+      <div id="filterMenu" class="menu hidden absolute bottom-[86px] left-1/2 translate-x-[60px] w-[220px] p-1.5 z-30">
+        <div class="px-3 pt-1.5 pb-1 text-[11px] font-bold muted uppercase tracking-wider">Lọc hiển thị</div>
+        <button data-f="all"><i data-lucide="users"></i>Tất cả nhân viên</button>
+        <button data-f="sale"><i data-lucide="briefcase"></i>Chỉ Team Sale</button>
+        <button data-f="cskh"><i data-lucide="headphones"></i>Chỉ Team CSKH</button>
+        <button data-f="active"><i data-lucide="phone-call"></i>Đang chốt đơn</button>
+        <div class="h-px bg-[#2c3240] my-1"></div>
+        <button data-f="names"><i data-lucide="tag"></i><span>Ẩn/hiện bảng tên</span></button>
+      </div>
+
+      <!-- dock -->
+      <div class="absolute bottom-4 left-1/2 -translate-x-1/2 dock flex items-center gap-1 p-1.5 z-20">
+        <button class="dock-btn active" data-view="all" data-tip="Toàn cảnh"><i data-lucide="house"></i></button>
+        <button class="dock-btn" data-view="sale" data-tip="Khu Team Sale"><i data-lucide="briefcase"></i></button>
+        <button class="dock-btn" data-view="cskh" data-tip="Khu Team CSKH"><i data-lucide="headphones"></i></button>
+        <button class="dock-btn" data-view="lounge" data-tip="Phòng họp &amp; Pantry"><i data-lucide="coffee"></i></button>
+        <div class="sep"></div>
+        <button class="dock-btn" onclick="zoomBy(1/1.2)" data-tip="Thu nhỏ"><i data-lucide="minus"></i></button>
+        <div class="mono text-[14px] font-bold w-[58px] text-center" id="zoomLbl">100%</div>
+        <button class="dock-btn" onclick="zoomBy(1.2)" data-tip="Phóng to"><i data-lucide="plus"></i></button>
+        <div class="sep"></div>
+        <button class="dock-btn" onclick="cycleView()" data-tip="Chuyển góc nhìn"><i data-lucide="rotate-3d"></i></button>
+        <button class="dock-btn" onclick="fitCenter()" data-tip="Căn giữa"><i data-lucide="scan"></i></button>
+        <button class="dock-btn" id="filterBtn" data-tip="Lọc hiển thị"><i data-lucide="list-filter"></i></button>
+        <button class="dock-btn" onclick="toggleFull()" data-tip="Toàn màn hình"><i data-lucide="maximize"></i></button>
+        <div class="sep"></div>
+        <button id="simBtn" class="h-[42px] px-4 whitespace-nowrap rounded-xl font-bold text-[13.5px] flex items-center gap-2 border border-amber-400/70 text-amber-300 bg-amber-400/10 hover:bg-amber-400/20 transition" onclick="manualRefresh()" title="Lấy lại đơn từ Pancake POS ngay">
+          <i data-lucide="refresh-cw"></i><span id="simLbl">Làm mới</span>
+        </button>
+      </div>
+    </main>
+
+    <!-- ================= RIGHT ================= -->
+    <aside id="rightCol" class="w-[360px] flex-none panel border-l border-[#232836] flex flex-col min-h-0">
+      <div class="px-4 pt-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-[21px] font-bold">Hoạt động</h2>
+          <div class="flex items-center gap-1.5 text-[12px] text-emerald-400"><span class="live-dot"></span>trực tiếp</div>
+        </div>
+        <div class="grid grid-cols-4 gap-2 mt-3">
+          <div class="mini"><div class="muted text-[15px]"><i data-lucide="circle-x"></i></div><div class="text-[19px] font-bold mono mt-1" id="sCalls">0</div><div class="text-[11px] muted">Đơn hủy</div></div>
+          <div class="mini"><div class="muted text-[15px]"><i data-lucide="tag"></i></div><div class="text-[19px] font-bold mono mt-1" id="sRate">0</div><div class="text-[11px] muted">Giảm giá</div></div>
+          <div class="mini"><div class="muted text-[15px]"><i data-lucide="receipt"></i></div><div class="text-[19px] font-bold mono mt-1" id="sAvg">0</div><div class="text-[11px] muted">AOV (Net)</div></div>
+          <div class="mini"><div class="muted text-[15px]"><i data-lucide="receipt-text"></i></div><div class="text-[19px] font-bold mono mt-1" id="sAds">0</div><div class="text-[11px] muted">Gross</div></div>
+        </div>
+        <div class="card mt-2.5 px-3.5 py-3">
+          <div class="flex items-center justify-between text-[13px]">
+            <div class="flex items-center gap-2 font-semibold"><span class="text-amber-400"><i data-lucide="trophy"></i></span>Mục tiêu hôm nay</div>
+            <div class="mono font-bold"><span id="gPct" class="text-amber-400">0%</span> <span class="muted text-[11.5px]" id="gOf"></span></div>
+          </div>
+          <div class="kbar !h-2 mt-2"><div id="gBar" style="width:0;background:linear-gradient(90deg,#22c55e,#f5b73b)"></div></div>
+          <div class="flex justify-between text-[11px] mt-1.5 muted"><span>Sale <b class="text-emerald-400 mono" id="gSale"></b></span><span>CSKH <b class="text-blue-400 mono" id="gCskh"></b></span></div>
+        </div>
+        <div class="flex gap-2 mt-3 p-1 rounded-xl bg-[#151821] border border-[#262b37]">
+          <button class="tab active" data-rtab="feed"><i data-lucide="activity"></i>Nhật ký</button>
+          <button class="tab" data-rtab="board"><i data-lucide="medal"></i>Bảng xếp hạng</button>
+        </div>
+        <div class="flex gap-1.5 mt-2.5 overflow-x-auto scroll-thin pb-1" id="chips">
+          <button class="chip on" data-c="all">Tất cả</button>
+          <button class="chip" data-c="order"><i data-lucide="badge-dollar-sign"></i>Đơn tính DT</button>
+          <button class="chip" data-c="cancel"><i data-lucide="circle-x"></i>Đơn hủy</button>
+          <button class="chip" data-c="sys"><i data-lucide="info"></i>Hệ thống</button>
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto scroll-thin px-3 pt-2 pb-3 space-y-2" id="feed"></div>
+      <div class="flex-1 overflow-y-auto scroll-thin px-3 pt-2 pb-3 space-y-2 hidden" id="board"></div>
+    </aside>
+  </div>
+
+  <!-- ================= FOOTER TICKER ================= -->
+  <footer class="ticker flex items-center flex-none">
+    <div class="h-full flex items-center gap-2 px-4 font-extrabold text-[12.5px] tracking-wider text-white flex-none z-10" style="background:linear-gradient(90deg,#dc2626,#f97316);box-shadow:8px 0 18px -4px rgba(0,0,0,.6)">
+      <i data-lucide="radio"></i>LIVE
+    </div>
+    <div class="flex-1 overflow-hidden h-full flex items-center" style="mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent)">
+      <div class="ticker-track" id="ticker"></div>
+    </div>
+  </footer>
+</div>
+
+<!-- ================= POS SETTINGS MODAL ================= -->
+<div id="modal" class="hidden fixed inset-0 modal-bg z-50 grid place-items-center p-4" onclick="if(event.target===this)closeModal()">
+  <div class="card w-full max-w-[760px] p-5 max-h-[90vh] overflow-y-auto scroll-thin">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2.5 text-[18px] font-bold"><span class="text-amber-400"><i data-lucide="plug-zap"></i></span>Kết nối Pancake POS · Team Sale &amp; CSKH</div>
+      <button class="icon-btn !w-9 !h-9" onclick="closeModal()"><i data-lucide="x"></i></button>
+    </div>
+    <div id="setBody" class="mt-3"></div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   OFFICE LIVE HUB – Sale & CSKH
+   Isometric office in SVG, state, simulation, effects and the POS webhook.
+   ===================================================================== */
+
+// ---------- utils ----------
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const rnd = (a,b) => a + Math.random()*(b-a);
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const fmtVND = n => Math.round(n).toLocaleString('vi-VN') + ' đ';
+const fmtD = n => Math.round(n).toLocaleString('vi-VN') + 'đ';
+const fmtShort = n => n >= 1e9 ? (n/1e9).toFixed(2).replace(/\.?0+$/,'').replace('.',',')+' tỷ'
+  : n >= 1e6 ? (n/1e6).toFixed(1).replace(/\.0$/,'').replace('.',',')+'tr'
+  : n >= 1e3 ? Math.round(n/1e3)+'k' : String(Math.round(n));
+const VN_MS = 7*3600*1000;
+const hhmm = d => { const v = new Date(+d + VN_MS); return String(v.getUTCHours()).padStart(2,'0')+':'+String(v.getUTCMinutes()).padStart(2,'0'); };
+const norm = s => String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase().trim();
+const esc = s => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const icons = () => { try { window.lucide && lucide.createIcons(); } catch(e){} };
+
+// ---------- config & state ----------
+// Dữ liệu thật từ Pancake POS. Cách tính theo POS:
+//  • Đơn tính: có nhân sự thuộc Team Sale / Team CSKH (gán bằng UUID) và status !== 6 (chỉ loại đơn hủy)
+//  • Gán nhân sự: creator trước, chỉ dùng assigning_seller khi đơn không có creator
+//  • Net = total_price_after_sub_discount (null thì dùng total_price) · Gross = total_price · không trừ ship
+//  • Lọc đơn theo ngày tạo (updateStatus=inserted_at), mốc giờ Việt Nam UTC+7
+const SHOP_ID_DEFAULT = '1290006440';
+const KPI_MONTH = { sale: 2400000000, cskh: 600000000 };   // tổng 3 tỷ / tháng
+const POLL_MS = 60000;
+const DAY_MS = 86400000;
+const TEAM = {
+  sale: { name:'Sale', color:'#22c55e', soft:'#4ade80', carpet:'#cfe2d3', front:'#2f9e5a', bubble:['#16a34a','#f59e0b'] },
+  cskh: { name:'CSKH', color:'#3b82f6', soft:'#7fb0ff', carpet:'#cfdbef', front:'#3d6fc4', bubble:['#2563eb','#06b6d4'] },
+  boss: { name:'BGĐ', color:'#a78bfa', soft:'#c4b5fd', carpet:'#e9e2fb', front:'#7c3aed', bubble:['#7c3aed','#a78bfa'] },
+};
+const STATUS = {
+  closed:  { label:'Vừa chốt đơn', group:'active', color:'#f5b73b', icon:'party-popper' },
+  calling: { label:'Đang ra đơn',  group:'active', color:'#22c55e', icon:'flame' },
+  waiting: { label:'Chờ khách',               group:'wait',   color:'#f5b73b', icon:'hourglass' },
+  resting: { label:'Chưa ra đơn hôm nay',     group:'rest',   color:'#6b7280', icon:'moon' },
+};
+// Chỉ 2 team. UUID gán trong phần "Kết nối POS" (hoặc nhập staff.json).
+const DEFAULT_STAFF = [
+  { key:'thu',    dept:'sale', name:'Lê Thi Anh Thư', short:'Thư' },
+  { key:'huong',  dept:'sale', name:'Thùy Hương',     short:'Hương' },
+  { key:'thao',   dept:'sale', name:'Hương Thảo',     short:'Thảo' },
+  { key:'linh',   dept:'sale', name:'Linh Têrêxa',    short:'Linh' },
+  { key:'tam',    dept:'sale', name:'Thanh Tâm',      short:'Tâm' },
+  { key:'hoai',   dept:'cskh', name:'Hoài',           short:'Hoài',    note:'TK Cỏ Ngọt' },
+  { key:'han',    dept:'cskh', name:'Hân',            short:'Hân',     note:'TK Minh Châu (Nguyễn)' },
+  { key:'ngoc',   dept:'cskh', name:'Ngọc',           short:'Ngọc',    note:'TK Minh Ngọc' },
+  { key:'hoaily', dept:'cskh', name:'Hoài Ly',        short:'Hoài Ly' },
+  { key:'hay',    dept:'cskh', name:'Hay',            short:'Hay',     note:'TK buithi' },
+];
+const LOOKS = [
+  { style:'long',  hair:'#2d1b14', shirt:'#f9a8d4', skin:'#ffdcc0' },
+  { style:'bob',   hair:'#1f1a17', shirt:'#60a5fa', skin:'#f6cfa9' },
+  { style:'bun',   hair:'#7a4a2a', shirt:'#fbbf24', skin:'#ffdcc0' },
+  { style:'long',  hair:'#3b2416', shirt:'#34d399', skin:'#f3c9a0' },
+  { style:'bob',   hair:'#4a2c1d', shirt:'#c4b5fd', skin:'#ffe0c7' },
+  { style:'long',  hair:'#5a3220', shirt:'#93c5fd', skin:'#ffdcc0' },
+  { style:'bun',   hair:'#222222', shirt:'#fca5a5', skin:'#f3c9a0' },
+  { style:'bob',   hair:'#3b2416', shirt:'#a7f3d0', skin:'#ffe0c7' },
+  { style:'long',  hair:'#6b4423', shirt:'#fde68a', skin:'#f6cfa9' },
+  { style:'bun',   hair:'#2d1b14', shirt:'#f0abfc', skin:'#ffdcc0' },
+];
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v==null ? d : JSON.parse(v); } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+};
+let cfg = Object.assign({ shopId:SHOP_ID_DEFAULT, apiKey:'', ids:{}, avatars:{} }, store.get('olh_cfg_v1', {}));
+cfg.avatars = cfg.avatars || {};
+const QUICK_MS = 10000;  // kiểm tra đơn mới mỗi 10 giây
+let staff = DEFAULT_STAFF.map((d,i)=>({ id:d.key, key:d.key, dept:d.dept, name:d.short, full:d.name, note:d.note||'',
+  uuid:null, ...LOOKS[i], revenue:0, gross:0, orders:0, cancels:0, lastAt:0, status:'resting', target:0 }));
+let byUuid = new Map();
+function rebuildIndex(){
+  byUuid = new Map();
+  staff.forEach(s=>{ s.uuid = cfg.ids[s.key] || null; if (s.uuid) byUuid.set(String(s.uuid).trim(), s); });
+}
+
+let personKeys = new Set();   // các trường Pancake gửi kèm tài khoản (để chẩn đoán avatar)
+let mode = null;                 // 'proxy' | 'direct' | null
+let todayOrders = [], monthBase = null, dayStart = 0;
+let seen = new Map();            // order id -> status (phát hiện đơn mới / đơn vừa hủy)
+let firstLoad = true, loading = false, lastSync = null, lastError = '';
+let diag = { total:0, skipped:0, viaSeller:0 };
+let discovered = new Map();      // uuid -> {id, name, count, roles}
+let feed = [], sysFeed = [], tickerItems = [], animIds = new Set();
+let todayMap = new Map(), freshAt = new Map(), lastSig = '';
+const isNew = id => Date.now() - (freshAt.get(id)||0) < 10*60000;
+let soundOn = true, nameTags = true;
+let currentTab = 'sale', rightTab = 'feed', feedFilter = 'all', viewFilter = 'all', searchQ = '';
+let selectedId = null, currentView = 'all';
+let feedSeq = 0;
+let DAILY_TARGET = 1, teamTarget = { sale:0, cskh:0 };
+
+// ---------- VN time ----------
+const vnDayStart = (ms=Date.now()) => Math.floor((ms+VN_MS)/DAY_MS)*DAY_MS - VN_MS;
+const vnParts = (ms=Date.now()) => { const d = new Date(ms+VN_MS); return { y:d.getUTCFullYear(), m:d.getUTCMonth(), d:d.getUTCDate() }; };
+const vnMonthStart = (ms=Date.now()) => { const p = vnParts(ms); return Date.UTC(p.y, p.m, 1) - VN_MS; };
+const daysInMonth = (ms=Date.now()) => { const p = vnParts(ms); return new Date(Date.UTC(p.y, p.m+1, 0)).getUTCDate(); };
+const dateKey = ms => { const p = vnParts(ms); return `${p.y}-${String(p.m+1).padStart(2,'0')}-${String(p.d).padStart(2,'0')}`; };
+const parseTs = v => {
+  if (v==null || v==='') return 0;
+  if (typeof v==='number') return v < 1e12 ? v*1000 : v;
+  const s = String(v); return Date.parse(/[zZ]$|[+-]\d\d:?\d\d$/.test(s) ? s : s+'Z') || 0;
+};
+
+// ---------- POS formulas ----------
+const orderNet = o => { const v = o.total_price_after_sub_discount; return Number(v==null ? o.total_price : v) || 0; };
+const orderGross = o => Number(o.total_price) || 0;
+const orderSource = o => (o && (o.order_sources_name || (o.page && o.page.name) || o.account_name)) || 'Pancake POS';
+const personId = (p, flat) => (p && (p.id || p.uuid)) || flat || null;
+function staffForOrder(o){
+  const c = personId(o.creator, o.creator_id);
+  if (c) return { s: byUuid.get(String(c)) || null, via:'creator' };
+  const a = personId(o.assigning_seller, o.assigning_seller_id);
+  if (a) return { s: byUuid.get(String(a)) || null, via:'seller' };
+  return { s:null, via:null };
+}
+function discover(o){
+  [['creator', o.creator, o.creator_id], ['assigning_seller', o.assigning_seller, o.assigning_seller_id]].forEach(([role,p,flat])=>{
+    const id = personId(p, flat); if (!id) return;
+    const k = String(id), d = discovered.get(k) || { id:k, name:(p && (p.name || p.fb_name)) || '(không tên)', count:0, roles:new Set() };
+    const av = p && (p.avatar_url || p.avatar || p.picture || p.image_url || p.profile_picture ||
+      (p.fb_id ? `https://graph.facebook.com/${encodeURIComponent(p.fb_id)}/picture?type=normal` : ''));
+    if (av && !d.avatar) d.avatar = String(av);
+    if (p && typeof p==='object') Object.keys(p).forEach(k=>personKeys.add(k));
+    d.count++; d.roles.add(role); discovered.set(k, d);
+  });
+}
+
+// ---------- ISOMETRIC ENGINE ----------
+const T = 30, C30 = 0.8660254;
+const FW = 26, FD = 20, WALL_H = 4.4;
+const OX = FD*C30*T + 60, OY = (WALL_H+0.6)*T + 40;
+const STAGE_W = Math.ceil((FW+FD)*C30*T + 120);
+const STAGE_H = Math.ceil(OY + (FW+FD)*0.5*T + 80);
+const P = (x,y,z=0) => ({ x: OX + (x-y)*C30*T, y: OY + (x+y)*0.5*T - z*T });
+const f1 = v => v.toFixed(1);
+const pts = a => a.map(p => f1(p.x)+','+f1(p.y)).join(' ');
+
+function shade(hex, amt){
+  let c = hex.replace('#',''); if (c.length===3) c = c.split('').map(ch=>ch+ch).join('');
+  const r=parseInt(c.slice(0,2),16), g=parseInt(c.slice(2,4),16), b=parseInt(c.slice(4,6),16);
+  const f = v => Math.round(amt<0 ? v*(1+amt) : v+(255-v)*amt);
+  return `rgb(${f(r)},${f(g)},${f(b)})`;
+}
+function box(x,y,z,w,d,h,col,o={}){
+  const top=[P(x,y,z+h),P(x+w,y,z+h),P(x+w,y+d,z+h),P(x,y+d,z+h)];
+  const lf=[P(x,y+d,z+h),P(x+w,y+d,z+h),P(x+w,y+d,z),P(x,y+d,z)];
+  const rt=[P(x+w,y,z+h),P(x+w,y+d,z+h),P(x+w,y+d,z),P(x+w,y,z)];
+  const st = o.stroke || 'rgba(20,24,35,.22)', sw = o.sw ?? .7;
+  const op = o.op!=null ? ` fill-opacity="${o.op}"` : '';
+  return `<g${o.cls?` class="${o.cls}"`:''}>`+
+    `<polygon points="${pts(lf)}" fill="${o.left||shade(col,-.1)}" stroke="${st}" stroke-width="${sw}" stroke-linejoin="round"${op}/>`+
+    `<polygon points="${pts(rt)}" fill="${o.right||shade(col,-.24)}" stroke="${st}" stroke-width="${sw}" stroke-linejoin="round"${op}/>`+
+    `<polygon points="${pts(top)}" fill="${o.top||col}" stroke="${st}" stroke-width="${sw}" stroke-linejoin="round"${op}/></g>`;
+}
+function quad(wpts, fill, extra=''){ return `<polygon points="${pts(wpts.map(p=>P(...p)))}" fill="${fill}" ${extra}/>`; }
+function cyl(cx,cy,z,r,h,col,top){
+  const b=P(cx,cy,z), t=P(cx,cy,z+h), rx=r*T*1.2247, ry=r*T*.7071;
+  return `<path d="M${f1(b.x-rx)},${f1(b.y)} A${f1(rx)},${f1(ry)} 0 0 0 ${f1(b.x+rx)},${f1(b.y)} L${f1(t.x+rx)},${f1(t.y)} A${f1(rx)},${f1(ry)} 0 0 0 ${f1(t.x-rx)},${f1(t.y)} Z" fill="${shade(col,-.2)}"/>`+
+         `<ellipse cx="${f1(t.x)}" cy="${f1(t.y)}" rx="${f1(rx)}" ry="${f1(ry)}" fill="${top||col}" stroke="rgba(0,0,0,.12)" stroke-width=".6"/>`;
+}
+// affine matrix mapping a local 2D plane (1px = 1/T unit) onto a world plane
+function M(o,u,v){
+  const p0=P(...o), pu=P(o[0]+u[0]/T,o[1]+u[1]/T,o[2]+u[2]/T), pv=P(o[0]+v[0]/T,o[1]+v[1]/T,o[2]+v[2]/T);
+  return `matrix(${(pu.x-p0.x).toFixed(4)},${(pu.y-p0.y).toFixed(4)},${(pv.x-p0.x).toFixed(4)},${(pv.y-p0.y).toFixed(4)},${f1(p0.x)},${f1(p0.y)})`;
+}
+const onBack  = (x,zTop,y=0.02) => M([x,y,zTop],[1,0,0],[0,0,-1]);
+const onLeft  = (y,zTop,x=0.02) => M([x,y,zTop],[0,-1,0],[0,0,-1]);
+const onFloor = (x,y,z=0.02) => M([x,y,z],[1,0,0],[0,1,0]);
+const onXFace = (x,yMax,zTop) => M([x,yMax,zTop],[0,-1,0],[0,0,-1]);
+const onYFace = (x,y,zTop) => M([x,y,zTop],[1,0,0],[0,0,-1]);
+
+// ---------- cảnh ngoài toà nhà (phủ kín khoảng trống) ----------
+const GZ = -1.4;   // mặt đất
+function tree(x,y,s=1){
+  const b = P(x,y,GZ+1.1*s), r = 15*s;
+  const leaves = [[-.7,-.2,1],[.7,-.3,1],[0,-.9,1.1],[-.5,-1.5,.85],[.5,-1.6,.85],[0,-2.1,.75]];
+  return `<ellipse cx="${f1(P(x,y,GZ).x)}" cy="${f1(P(x,y,GZ).y)}" rx="${f1(20*s)}" ry="${f1(10*s)}" fill="#000" opacity=".16"/>` +
+    cyl(x,y,GZ,.13*s,1.15*s,'#7a5232') + leaves.map(([dx,dy,k],i)=>
+    `<circle cx="${f1(b.x+dx*r)}" cy="${f1(b.y+dy*r)}" r="${f1(r*k)}" fill="${['#2f7a3b','#3a8c45','#459c4f','#2f7a3b','#4caf50','#5fbf5a'][i]}" stroke="rgba(0,0,0,.12)"/>`).join('');
+}
+function lamp(x,y){
+  const top = P(x,y,GZ+2.6);
+  return box(x-.06,y-.06,GZ,.12,.12,2.6,'#3b4252') + `<circle cx="${f1(top.x)}" cy="${f1(top.y)}" r="5" fill="#fde68a"/><circle cx="${f1(top.x)}" cy="${f1(top.y)}" r="13" fill="#fde68a" opacity=".22"/>`;
+}
+function car(x,y,alongX,col){
+  return alongX ? box(x,y,GZ+.12,2.3,1.05,.5,col) + box(x+.55,y+.08,GZ+.62,1.15,.9,.42,'#cfe6f5',{left:'#9cc7e4',right:'#7fb2d6'})
+                : box(x,y,GZ+.12,1.05,2.3,.5,col) + box(x+.08,y+.55,GZ+.62,.9,1.15,.42,'#cfe6f5',{left:'#9cc7e4',right:'#7fb2d6'});
+}
+function palm(x,y,s=1){
+  const b = P(x,y,GZ), t = P(x+.35*s,y-.35*s,GZ+2.9*s);
+  const fr = [[-38,-6],[38,-6],[-22,-18],[22,-18],[0,-24],[-30,10],[30,10]];
+  return `<ellipse cx="${f1(b.x)}" cy="${f1(b.y)}" rx="${f1(16*s)}" ry="${f1(7*s)}" fill="#000" opacity=".12"/>` +
+    `<path d="M${f1(b.x-3*s)},${f1(b.y)} Q${f1(b.x-8*s)},${f1((b.y+t.y)/2)} ${f1(t.x-2*s)},${f1(t.y)} L${f1(t.x+2*s)},${f1(t.y)} Q${f1(b.x-3*s)},${f1((b.y+t.y)/2)} ${f1(b.x+3*s)},${f1(b.y)} Z" fill="#9a6b3f"/>` +
+    fr.map(([dx,dy],i)=>`<ellipse cx="${f1(t.x+dx*s*.55)}" cy="${f1(t.y+dy*s*.45+4*s)}" rx="${f1(22*s)}" ry="${f1(6*s)}" fill="${i%2?'#2f8f46':'#3fa354'}" transform="rotate(${f1(dx*.55)} ${f1(t.x+dx*s*.55)} ${f1(t.y+dy*s*.45+4*s)})"/>`).join('') +
+    `<circle cx="${f1(t.x-3)}" cy="${f1(t.y+5)}" r="${f1(3.2*s)}" fill="#7a5232"/><circle cx="${f1(t.x+3)}" cy="${f1(t.y+6)}" r="${f1(3.2*s)}" fill="#6b4423"/>`;
+}
+function umbrella(x,y,c1,c2){
+  const b = P(x,y,GZ), t = P(x,y,GZ+1.9);
+  return box(x-.04,y-.04,GZ,.08,.08,1.9,'#e5e7eb') +
+    `<path d="M${f1(t.x-34)},${f1(t.y+9)} Q${f1(t.x)},${f1(t.y-22)} ${f1(t.x+34)},${f1(t.y+9)} Q${f1(t.x)},${f1(t.y+2)} ${f1(t.x-34)},${f1(t.y+9)} Z" fill="${c1}"/>` +
+    `<path d="M${f1(t.x-12)},${f1(t.y+4)} Q${f1(t.x)},${f1(t.y-18)} ${f1(t.x+12)},${f1(t.y+4)} Z" fill="${c2}"/>` +
+    box(x+.4,y+.3,GZ,1.4,.55,.18,'#ffffff',{top:'#f8fafc'}) + box(x+1.5,y+.3,GZ+.18,.3,.55,.35,'#ffffff');
+}
+function boat(x,y,col){
+  const b = P(x,y,GZ+.05), m = P(x+.9,y+.5,GZ+.3), top = P(x+.9,y+.5,GZ+3.0);
+  return `<g class="boat"><path d="M${f1(b.x-30)},${f1(b.y-2)} L${f1(b.x+44)},${f1(b.y+18)} L${f1(b.x+30)},${f1(b.y+30)} L${f1(b.x-24)},${f1(b.y+14)} Z" fill="${col}" stroke="rgba(0,0,0,.2)"/>
+    <line x1="${f1(m.x)}" y1="${f1(m.y)}" x2="${f1(top.x)}" y2="${f1(top.y)}" stroke="#78350f" stroke-width="2.4"/>
+    <path d="M${f1(top.x+2)},${f1(top.y+4)} L${f1(m.x+30)},${f1(m.y-8)} L${f1(m.x+2)},${f1(m.y-6)} Z" fill="#fff" stroke="#e2e8f0"/>
+    <path d="M${f1(top.x-2)},${f1(top.y+14)} L${f1(m.x-20)},${f1(m.y-10)} L${f1(m.x-2)},${f1(m.y-8)} Z" fill="#fde68a"/></g>`;
+}
+// ---------- quán nhậu Minh Hoàng (phía sau toà nhà) ----------
+function quanNhau(){
+  const z = GZ, D = (x,y,k=0) => -2550 + (x+y)*.1 + k*.001;
+  add(D(-40,-40), quad([[3.5,-17,z],[18,-17,z],[18,-5,z],[3.5,-5,z]], '#c8a27a', 'stroke="#a4805a" stroke-width="2"'));
+  // nhà quán + mái ngói
+  add(D(5,-16), box(5,-16.6,z,10,4.4,3.0,'#efd9b4',{left:'#e6cba0', right:'#c9a57a'}) +
+                box(4.6,-17,z+3,10.8,5.2,.35,'#b4432f',{top:'#c2523b', left:'#9b3826', right:'#7f2c1e'}) +
+                box(5.4,-16.4,z+3.35,10,4.4,.5,'#c2523b',{top:'#cf6249', left:'#a63c29', right:'#86301f'}));
+  const fy = -12.2;
+  add(D(5,-16,1), `<g transform="${onYFace(5,fy+.005,z+2.0)}">
+      <rect x="114" y="0" width="36" height="60" rx="2" fill="#5b3a22"/><rect x="118" y="4" width="13" height="52" fill="#7c4f2c"/><rect x="133" y="4" width="13" height="52" fill="#7c4f2c"/>
+      <rect x="18" y="8" width="70" height="34" rx="2" fill="#fde68a" stroke="#7c4f2c" stroke-width="3"/><path d="M53,8V42M18,25H88" stroke="#7c4f2c" stroke-width="2"/>
+      <rect x="176" y="8" width="90" height="34" rx="2" fill="#fde68a" stroke="#7c4f2c" stroke-width="3"/><path d="M221,8V42M176,25H266" stroke="#7c4f2c" stroke-width="2"/></g>`);
+  add(D(5,-16,2), `<g transform="${onYFace(6,fy+.01,z+2.95)}">
+      <rect x="0" y="0" width="240" height="30" rx="4" fill="#b91c1c" stroke="#fbbf24" stroke-width="2.5"/>
+      <text x="120" y="20.5" text-anchor="middle" font-size="17" font-weight="800" fill="#fde047" letter-spacing="1.5">MINH HOÀNG QUÁN</text>
+      <text x="120" y="-4" text-anchor="middle" font-size="8.5" font-weight="700" fill="#7f1d1d">LẨU · NƯỚNG · BIA LẠNH</text></g>`);
+  // mái hiên đỏ trắng
+  let aw = ''; for (let i=0;i<10;i++) aw += quad([[5+i,fy,z+2.25],[6+i,fy,z+2.25],[6+i,fy+1.3,z+1.95],[5+i,fy+1.3,z+1.95]], i%2?'#ffffff':'#dc2626', 'stroke="rgba(0,0,0,.08)"');
+  add(D(10,-11,0), aw);
+  // dây đèn lồng
+  const lp = [5.3,7.3,9.3,11.3,13.3,15.3].map(x=>P(x,fy+1.35,z+1.9));
+  add(D(10,-10.8,1), `<polyline points="${lp.map(p=>f1(p.x)+','+f1(p.y)).join(' ')}" fill="none" stroke="#1f2937" stroke-width="1.2"/>` +
+    lp.map(p=>`<ellipse cx="${f1(p.x)}" cy="${f1(p.y+8)}" rx="6" ry="7.5" fill="#ef4444" stroke="#991b1b"/><rect x="${f1(p.x-3)}" y="${f1(p.y+14)}" width="6" height="2.4" fill="#fbbf24"/><circle cx="${f1(p.x)}" cy="${f1(p.y+8)}" r="11" fill="#fca5a5" opacity=".25"/>`).join(''));
+  // bàn nhậu: bàn inox + ghế nhựa + bia
+  const tables = [[7,-8.6],[10.6,-8.6],[14.2,-8.6],[8.8,-6.4],[12.4,-6.4]];
+  tables.forEach(([x,y],ti)=>{
+    const stool = (sx,sy,k)=>add(D(sx,sy,k), cyl(sx,sy,z,.17,.32,ti%2?'#2563eb':'#ef4444'));
+    stool(x-.75,y,1); stool(x,y-.75,1);
+    add(D(x,y,5), box(x-.45,y-.45,z,.9,.9,.5,'#9ca3af',{top:'#e5e7eb'}) +
+      cyl(x-.15,y-.1,z+.5,.06,.28,'#15803d','#22c55e') + cyl(x+.12,y+.05,z+.5,.06,.28,'#15803d','#22c55e') + cyl(x+.05,y-.25,z+.5,.12,.06,'#f8fafc'));
+    stool(x+.75,y,9); stool(x,y+.75,9);
+  });
+  // khách đang nâng ly ở bàn giữa
+  const guests = [
+    { x:10.6, y:-9.35, style:'short', hair:'#1f2937', shirt:'#fb923c', skin:'#f3c9a0', dept:'boss' },
+    { x:9.85, y:-8.6,  style:'spiky', hair:'#3b2416', shirt:'#34d399', skin:'#f6cfa9', dept:'boss' },
+  ];
+  guests.forEach((g,i)=>{ const p = P(g.x,g.y,z);
+    add(D(g.x,g.y,3), `<g class="char meet" transform="translate(${f1(p.x)},${f1(p.y)})">${chibiSVG(g)}<g transform="translate(15,-34)"><rect x="-4" y="-9" width="8" height="11" rx="1.5" fill="#fbbf24" opacity=".9"/><rect x="-4" y="-11" width="8" height="3" rx="1.5" fill="#fff"/></g></g>`); });
+  // két bia + bếp nướng có khói
+  add(D(16.2,-11,0), box(16,-11.6,z,.8,.6,.35,'#facc15') + box(16,-11.6,z+.35,.8,.6,.35,'#eab308') + box(16.9,-11.6,z,.8,.6,.35,'#facc15'));
+  const gp = P(4.6,-9.3,z+1.0);
+  add(D(4.2,-9.6,0), box(4.2,-9.8,z,.9,.6,.8,'#1f2937',{top:'#374151'}) + `<circle cx="${f1(gp.x)}" cy="${f1(gp.y-2)}" r="3" fill="#f97316"/>` +
+    `<circle class="st-float" cx="${f1(gp.x-3)}" cy="${f1(gp.y-12)}" r="6" fill="#e5e7eb" opacity=".7"/><circle class="st-float b" cx="${f1(gp.x+4)}" cy="${f1(gp.y-20)}" r="8" fill="#e5e7eb" opacity=".55"/>`);
+  add(D(17.5,-6,0), plant(17.5,-6,1.0,'#d6763a').replace(/translate/g,'translate'));
+}
+
+function trafficLight(x,y,delay){
+  const t = P(x,y,GZ+2.3), c = ['#ef4444','#facc15','#22c55e'];
+  const lights = c.map((col,i)=>`<circle cx="${f1(t.x)}" cy="${f1(t.y+6+i*8)}" r="3.2" fill="${col}" opacity=".25"><animate attributeName="opacity" values="${i===0?'1;1;.2;.2;.2;.2':i===1?'.2;.2;.2;.2;1;.2':'.2;.2;1;1;.2;.2'}" dur="9s" begin="${delay}s" repeatCount="indefinite"/></circle>`).join('');
+  return box(x-.05,y-.05,GZ,.1,.1,2.3,'#374151') + `<rect x="${f1(t.x-6)}" y="${f1(t.y)}" width="12" height="28" rx="3" fill="#111827" stroke="#4b5563"/>` + lights;
+}
+function outdoor(){
+  const G = 44, z = GZ;
+  add(-3000, quad([[-G,-G,z],[FW+G,-G,z],[FW+G,FD+G,z],[-G,FD+G,z]], '#5d8c56'));
+  let st = ''; for (let i=-G;i<FW+G;i+=2) st += quad([[i,-G,z],[i+1,-G,z],[i+1,FD+G,z],[i,FD+G,z]], 'rgba(255,255,255,.035)');
+  add(-2999, st);
+  // vỉa hè lát gạch quanh toà nhà
+  let pav = quad([[-2.4,-2.4,z],[FW+2.8,-2.4,z],[FW+2.8,FD+2.8,z],[-2.4,FD+2.8,z]], '#d3ccbf', 'stroke="#b3ab9c" stroke-width="2"');
+  for (let i=-2;i<FW+2.8;i+=1.4){ const a=P(i,-2.4,z), b=P(i,FD+2.8,z); pav += `<line x1="${f1(a.x)}" y1="${f1(a.y)}" x2="${f1(b.x)}" y2="${f1(b.y)}" stroke="rgba(0,0,0,.06)"/>`; }
+  for (let j=-2;j<FD+2.8;j+=1.4){ const a=P(-2.4,j,z), b=P(FW+2.8,j,z); pav += `<line x1="${f1(a.x)}" y1="${f1(a.y)}" x2="${f1(b.x)}" y2="${f1(b.y)}" stroke="rgba(0,0,0,.06)"/>`; }
+  add(-2998, pav);
+  // 2 con đường phía trước
+  const ry0 = FD+5, ry1 = FD+9.2, rx0 = FW+5, rx1 = FW+9.2;
+  let road = quad([[-G,ry0-.35,z],[FW+G,ry0-.35,z],[FW+G,ry1+.35,z],[-G,ry1+.35,z]], '#e2ddd3')
+           + quad([[rx0-.35,-G,z],[rx1+.35,-G,z],[rx1+.35,FD+G,z],[rx0-.35,FD+G,z]], '#e2ddd3')
+           + quad([[-G,ry0,z],[FW+G,ry0,z],[FW+G,ry1,z],[-G,ry1,z]], '#3a3f4a')
+           + quad([[rx0,-G,z],[rx1,-G,z],[rx1,FD+G,z],[rx0,FD+G,z]], '#3a3f4a');
+  const my = (ry0+ry1)/2, mx = (rx0+rx1)/2;
+  for (let i=-G;i<FW+G;i+=2.2) if (i+1.2<rx0-.5 || i>rx1+.5) road += quad([[i,my-.07,z],[i+1.2,my-.07,z],[i+1.2,my+.07,z],[i,my+.07,z]], '#f1f5f9');
+  for (let j=-G;j<FD+G;j+=2.2) if (j+1.2<ry0-.5 || j>ry1+.5) road += quad([[mx-.07,j,z],[mx+.07,j,z],[mx+.07,j+1.2,z],[mx-.07,j+1.2,z]], '#f1f5f9');
+  for (let k=0;k<6;k++) road += quad([[rx0-2.4,ry0+.35+k*.7,z],[rx0-.6,ry0+.35+k*.7,z],[rx0-.6,ry0+.7+k*.7,z],[rx0-2.4,ry0+.7+k*.7,z]], '#f1f5f9');
+  add(-2997, road);
+  // bãi cát + biển: chỉ ở phía ngoài con đường bên phải
+  const sx = rx1+.35, wx = rx1+3.6;
+  let sea = quad([[sx,-G,z],[FW+G,-G,z],[FW+G,FD+G,z],[sx,FD+G,z]], '#f1dfae');
+  for (let k=0;k<45;k++){ const a = P(sx+.4+((k*13)%28)/10, -G+((k*37)%(FD+2*G)), z); sea += `<circle cx="${f1(a.x)}" cy="${f1(a.y)}" r="1.4" fill="#d9c08a"/>`; }
+  sea += quad([[wx,-G,z],[FW+G,-G,z],[FW+G,FD+G,z],[wx,FD+G,z]], '#2f9bd6');
+  sea += quad([[wx+3,-G,z],[FW+G,-G,z],[FW+G,FD+G,z],[wx+3,FD+G,z]], '#2588c4');
+  sea += quad([[wx-.18,-G,z],[wx+.18,-G,z],[wx+.18,FD+G,z],[wx-.18,FD+G,z]], '#e0f2fe');
+  const wave = (a,b,i) => `<line x1="${f1(a.x)}" y1="${f1(a.y)}" x2="${f1(b.x)}" y2="${f1(b.y)}" stroke="#bfe6fb" stroke-width="2" stroke-linecap="round" opacity=".3"><animate attributeName="opacity" values=".1;.75;.1" dur="${(2.6+(i%4)*.5).toFixed(1)}s" begin="${((i*.37)%3).toFixed(2)}s" repeatCount="indefinite"/></line>`;
+  for (let i=0;i<120;i++){ const yy = -G+((i*41)%(FD+2*G)), xx = wx+1+((i*31)%(G-12)); sea += wave(P(xx,yy,z), P(xx,yy+1.6,z), i); }
+  add(-2996, sea);
+  // cây, đèn, xe
+  const back = [[-6,-4],[0,-9],[-3,-15],[20,-7],[23,-12],[27,-5],[31,-9],[-5,4],[-6,11],[-5,18],[-4,25],[36,-14],[-12,-10],[8,-21],[16,-22]];
+  back.forEach(([x,y],i)=>add(-2550+(x+y)*.1, tree(x,y,1.25+((i*37)%5)/10)));
+  const front = [[2,FD+3.9],[8,FD+3.9],[14,FD+3.9],[20,FD+3.9],[FW+3.9,2],[FW+3.9,8],[FW+3.9,14],
+                 [-11,FD+11.5],[-3,FD+11.5],[5,FD+11.5],[13,FD+11.5],[21,FD+11.5],[27.5,FD+11.5],
+                 [-7,FD+17],[3,FD+19],[12,FD+16],[22,FD+18],[-14,FD+22],[8,FD+26],[18,FD+24]];
+  front.forEach(([x,y],i)=>add(6000+x+y, tree(x,y,1.1+((i*53)%5)/10)));
+  [[5,FD+4.3],[17,FD+4.3],[FW+4.3,5],[FW+4.3,17],[1,ry1+.9],[11,ry1+.9],[21,ry1+.9]].forEach(([x,y])=>add(6000+x+y-.5, lamp(x,y)));
+  // đèn giao thông ở ngã tư
+  [[rx0-.7,ry0-.7,0],[rx1+.5,ry1+.5,1.5],[rx0-.7,ry1+.6,3]].forEach(([x,y,d])=>add(6000+x+y, trafficLight(x,y,d)));
+  // đồ trên bãi biển
+  [[sx+.8,-12],[sx+.8,-4],[sx+.9,6],[sx+.8,16],[sx+.9,26],[sx+.8,36]].forEach(([x,y],i)=>add(6000+x+y, palm(x,y,1.05+(i%3)*.12)));
+  [[sx+1.1,-8,'#ec4899','#fde68a'],[sx+1.1,0,'#22c55e','#ffffff'],[sx+1.2,11,'#f97316','#ffffff'],[sx+1.1,21,'#3b82f6','#ffffff'],[sx+1.2,31,'#f97316','#fde68a']]
+    .forEach(([x,y,c1,c2])=>add(6000+x+y+.1, umbrella(x,y,c1,c2)));
+  add(6000+wx+12+2, boat(wx+11, 2, '#f59e0b'));
+  add(6000+wx+9+FD+16, boat(wx+8, FD+15, '#0ea5e9'));
+  add(6000+wx+16-6, boat(wx+15, -7, '#ef4444'));
+  add(6000-4+ry1, car(-6, my+.3, true, '#22c55e'));
+  add(6000+rx0+FD+18, car(mx+.3, FD+17, false, '#a855f7'));
+  add(6000+6+ry0+.3, car(6, ry0+.35, true, '#ef4444'));
+  add(6000+16+my+.3, car(16, my+.3, true, '#f5b73b'));
+  add(6000+rx0+10, car(rx0+.35, 8, false, '#3b82f6'));
+  quanNhau();
+}
+
+function plant(x,y,s=1,pot='#e9e3d9'){
+  const base=P(x,y,.55*s), r=13*s;
+  const leaves=[[-.6,-.9,1],[.6,-1,1],[0,-1.7,1.05],[-.9,-1.8,.8],[.9,-1.9,.8],[0,-2.5,.8]];
+  return cyl(x,y,0,.3*s,.55*s,pot) + leaves.map(([dx,dy,k],i)=>
+    `<circle cx="${f1(base.x+dx*r)}" cy="${f1(base.y+dy*r)}" r="${f1(r*k)}" fill="${['#3f9a4a','#4caf50','#5fbf5a','#3a8c45','#62c463','#7bd36c'][i]}" stroke="rgba(0,0,0,.1)"/>`).join('');
+}
+
+// desk slots
+// Mỗi team: 4 thành viên ngồi cụm 2×2, Leader ngồi bàn riêng
+const LEADER = { sale:'huong', cskh:'hay' };
+const COLS = [1.6, 4.8];
+const ROWS = { sale:[2.9, 6.5], cskh:[12.9, 16.5] };
+const LEAD_POS = { sale:{ dx:9.6, dy:4.7 }, cskh:{ dx:9.6, dy:14.7 } };
+function slotsOf(dept){ return [[0,0],[0,1],[1,0],[1,1]].map(([r,c]) => ({ dx:COLS[c], dy:ROWS[dept][r], r, c })); }
+function assignSeats(){
+  ['sale','cskh'].forEach(dept=>{
+    const slots = slotsOf(dept); let i = 0;
+    staff.filter(s=>s.dept===dept).forEach(s=>{
+      s.leader = LEADER[dept]===s.key;
+      if (s.leader){ const L = LEAD_POS[dept]; s.seat = { x:L.dx+1.4, y:L.dy-0.45 }; return; }
+      const sl = slots[Math.min(i++, slots.length-1)];
+      s.seat = { x: sl.dx+1.1, y: sl.dy-0.45 };
+    });
+  });
+}
+
+let items = [];
+const add = (depth, svg) => items.push({depth, svg});
+
+function deskUnit(dept, sl, k){
+  const {dx, dy} = sl, base = dx+1.1+dy-0.45, team = TEAM[dept];
+  // chair
+  add(base-.3, box(dx+.72, dy-1.0, .62, .76, .13, .95, '#3b4252', {top:'#4a5266'}));
+  add(base-.2, box(dx+1.06, dy-.55, 0, .08, .08, .4, '#2a2f3a') + box(dx+.7, dy-.88, .4, .8, .78, .2, '#434b5e', {top:'#525b70'}));
+  // cskh cubicle partitions
+  if (dept==='cskh'){
+    add(dx+dy-.2, box(dx-.1, dy-1.05, 0, .12, 2.2, 1.6, '#5677b6', {top:'#9db5e6'}));
+    if (sl.c===COLS.length-1) add(dx+2.3+dy+.05, box(dx+2.3, dy-1.05, 0, .12, 2.2, 1.6, '#5677b6', {top:'#9db5e6'}));
+  }
+  // desk
+  let d = base + 1;
+  add(d, box(dx, dy, 0, 2.2, 1.1, 1.0, '#f6f4ef', {left:team.front, right:'#cfcac0'}));
+  add(d+.01, box(dx, dy+1.06, .05, 2.2, .04, .9, '#000', {op:0}));
+  // monitor on left end facing +x (screen visible)
+  const sx = dx+.16;
+  add(d+.02, box(dx+.22, dy+.45, 1.0, .12, .12, .22, '#2a2f3a') + box(sx, dy+.1, 1.18, .07, .84, .64, '#232838', {top:'#2b3140'}));
+  const scr = onXFace(sx+.072, dy+.9, 1.78);
+  let content;
+  if (dept==='sale'){
+    const hs=[6,9,7,12,10,15];
+    content = `<rect x="1" y="1" width="21.5" height="16" rx="1.5" fill="#0f1a2e"/>` +
+      hs.map((h,i)=>`<rect x="${3+i*3.1}" y="${15-h*.8}" width="2.1" height="${h*.8}" fill="${i===5?'#4ade80':'#3b82f6'}" class="screen-glow"/>`).join('') +
+      `<path d="M2.5,11 L7,8 L11,9 L15,5 L20,3" stroke="#f5b73b" stroke-width="1" fill="none"/>`;
+  } else {
+    content = `<rect x="1" y="1" width="21.5" height="16" rx="1.5" fill="#eaf1ff"/>`+
+      `<rect x="2.5" y="3" width="10" height="3" rx="1.4" fill="#b7cdf5"/><rect x="9" y="7.5" width="12" height="3" rx="1.4" fill="#3b82f6" class="screen-glow"/>`+
+      `<rect x="2.5" y="12" width="13" height="3" rx="1.4" fill="#b7cdf5"/>`;
+  }
+  add(d+.03, `<g transform="${scr}">${content}</g>`);
+  // laptop (lid faces the person, we see its back)
+  add(d+.04, box(dx+.72, dy+.22, 1.0, .78, .5, .03, '#c7ccd6'));
+  add(d+.05, box(dx+.72, dy+.7, 1.03, .78, .05, .5, '#8f99aa', {top:'#a9b2c2'}) +
+    `<circle cx="${f1(P(dx+1.11,dy+.75,1.29).x)}" cy="${f1(P(dx+1.11,dy+.75,1.29).y)}" r="2.2" fill="#dfe4ec"/>`);
+  // props
+  add(d+.06, box(dx+1.55, dy+.5, 1.0, .5, .38, .025, '#ffffff') + box(dx+1.6, dy+.45, 1.025, .45, .36, .02, '#fff8d6'));
+  add(d+.07, cyl(dx+1.95, dy+.25, 1.0, .1, .2, k%2?'#ffffff':team.color));
+  if (dept==='cskh') add(d+.08, `<g>${box(dx+1.75,dy+.62,1.0,.3,.28,.06,'#2d3342')}</g>`);
+  if ((k+ (dept==='sale'?0:1))%3===0) add(d+.09, plant(dx+.45, dy+.85, .45));
+}
+
+function leaderDesk(dept){
+  const { dx, dy } = LEAD_POS[dept], team = TEAM[dept], base = dx+1.4+dy-0.45;
+  // thảm riêng viền vàng
+  add(-1987, quad([[dx-.7,dy-1.7,.015],[dx+3.5,dy-1.7,.015],[dx+3.5,dy+2.0,.015],[dx-.7,dy+2.0,.015]], '#efe3c6', 'stroke="#f5b73b" stroke-width="3"'));
+  add(-1986, `<g transform="${onFloor(dx-.4, dy+1.85)}"><text font-size="15" font-weight="800" fill="#c98a1a" fill-opacity=".75" letter-spacing="2">LEADER ${team.name.toUpperCase()}</text></g>`);
+  // ghế giám đốc lưng cao
+  add(base-.3, box(dx+.92, dy-1.08, .62, .96, .16, 1.35, '#2b2f3a', {top:'#3d4352'}));
+  add(base-.2, box(dx+1.36, dy-.55, 0, .08, .08, .4, '#2a2f3a') + box(dx+.88, dy-.92, .4, 1.04, .84, .22, '#3a4050', {top:'#4a5266'}));
+  // bàn gỗ lớn
+  const d = base + 1;
+  add(d, box(dx, dy, 0, 2.8, 1.2, 1.02, '#a8754e', {left:'#7a5236', right:'#5f3f2a'}));
+  add(d+.01, `<g transform="${onYFace(dx+.95, dy+1.205, .82)}"><rect width="54" height="15" rx="3" fill="#f5b73b" stroke="#8a5a12" stroke-width="1"/><text x="27" y="11" text-anchor="middle" font-size="9" font-weight="800" fill="#3a2410" letter-spacing="1.5">LEADER</text></g>`);
+  // màn hình (mặt hướng về leader)
+  const sx = dx+.16;
+  add(d+.02, box(dx+.22, dy+.5, 1.02, .12, .12, .22, '#2a2f3a') + box(sx, dy+.12, 1.2, .07, .96, .7, '#232838', {top:'#2b3140'}));
+  add(d+.03, `<g transform="${onXFace(sx+.072, dy+1.02, 1.85)}"><rect x="1" y="1" width="25" height="17.5" rx="1.5" fill="#0f1a2e"/>${[5,8,7,11,13,16].map((h,i)=>`<rect x="${3.5+i*3.6}" y="${17-h*.85}" width="2.4" height="${h*.85}" fill="${i===5?'#f5b73b':team.color}" class="screen-glow"/>`).join('')}</g>`);
+  // laptop
+  add(d+.04, box(dx+1.02, dy+.25, 1.02, .78, .5, .03, '#c7ccd6'));
+  add(d+.05, box(dx+1.02, dy+.75, 1.05, .78, .05, .5, '#8f99aa', {top:'#a9b2c2'}) + `<circle cx="${f1(P(dx+1.41,dy+.8,1.31).x)}" cy="${f1(P(dx+1.41,dy+.8,1.31).y)}" r="2.2" fill="#dfe4ec"/>`);
+  // cúp + giấy tờ + cây
+  add(d+.06, box(dx+1.95, dy+.55, 1.02, .5, .38, .025, '#ffffff'));
+  const tp = P(dx+2.5, dy+.35, 1.45);
+  add(d+.07, cyl(dx+2.5, dy+.35, 1.02, .14, .08, '#8a5a12') + cyl(dx+2.5, dy+.35, 1.1, .05, .2, '#f5b73b') +
+    `<path d="M${f1(tp.x-7)},${f1(tp.y-9)} h14 v4 a7,7 0 0 1 -14,0 z" fill="#f5b73b" stroke="#c98a1a"/>`);
+  add(dx+3.2+dy-.9, plant(dx+3.2, dy-.9, .95, '#d6763a'));
+}
+
+// Phòng họp: chỉ để trang trí, không tính doanh thu
+const MEETING = [
+  { id:'m-tien',  name:'Tiến',  role:'CEO', stand:true, x:24.2, y:1.4,  style:'short', hair:'#1a1a1a', shirt:'#1e293b', skin:'#f3c9a0' },
+  // ngồi dãy ghế trước bàn, quay lưng về phía người xem để nhìn lên bảng giao ban
+  { id:'m-loan',  name:'Loan',  x:20.0, y:5.6, back:true, style:'long',  hair:'#3b2416', shirt:'#fda4af', skin:'#ffdcc0' },
+  { id:'m-tien2', name:'Tiên',  x:21.5, y:5.6, back:true, style:'bob',   hair:'#5a3220', shirt:'#c4b5fd', skin:'#ffe0c7' },
+  { id:'m-cuong', name:'Cường', x:23.0, y:5.6, back:true, style:'short', hair:'#222222', shirt:'#93c5fd', skin:'#f6cfa9' },
+];
+// Nhân vật nhìn từ phía sau: thấy gáy, tóc và lưng áo
+function backSVG(s){
+  const dark = shade(s.shirt,-.15);
+  const spiky = s.style==='spiky' ? `<path d="M-17,-80 L-12,-95 L-6,-87 L0,-99 L6,-87 L12,-95 L17,-80Z" fill="${s.hair}"/>` : '';
+  const bun = s.style==='bun' ? `<circle cx="0" cy="-93" r="8" fill="${s.hair}"/>` : '';
+  return `<ellipse cx="0" cy="0" rx="16" ry="7" fill="#000" opacity=".12"/>
+  <g class="inner">
+    <g class="armL"><rect x="-20" y="-46" width="8" height="21" rx="4" fill="${dark}"/></g>
+    <g class="armR"><rect x="12" y="-46" width="8" height="21" rx="4" fill="${dark}"/></g>
+    <path d="M-15,-18 C-17,-42 -11,-51 0,-51 C11,-51 17,-42 15,-18 Z" fill="${s.shirt}"/>
+    <path d="M0,-49 L0,-22" stroke="${dark}" stroke-width="1.2" opacity=".6"/>
+    <g class="head">
+      <rect x="-5" y="-56" width="10" height="7" rx="3" fill="${shade(s.skin,-.06)}"/>
+      <circle cx="-17.5" cy="-69" r="3.6" fill="${shade(s.skin,-.08)}"/><circle cx="17.5" cy="-69" r="3.6" fill="${shade(s.skin,-.08)}"/>
+      ${bun}<circle cx="0" cy="-71" r="18.5" fill="${s.hair}"/>${hairBack(s)}${spiky}
+      <path d="M-11,-84 Q0,-90 11,-84" stroke="#fff" stroke-opacity=".18" stroke-width="2" fill="none"/>
+    </g>
+  </g>`;
+}
+function ceoSVG(s){
+  const suit = '#1e293b';
+  return `<ellipse cx="0" cy="0" rx="15" ry="6.5" fill="#000" opacity=".14"/>
+  <g class="inner">
+    <rect x="-9" y="-33" width="7.5" height="31" rx="3" fill="#111827"/><rect x="1.5" y="-33" width="7.5" height="31" rx="3" fill="#111827"/>
+    <ellipse cx="-5.5" cy="-2" rx="5.5" ry="3" fill="#0b0f19"/><ellipse cx="5.5" cy="-2" rx="5.5" ry="3" fill="#0b0f19"/>
+    <path d="M-15,-30 C-17,-58 -11,-66 0,-66 C11,-66 17,-58 15,-30 Z" fill="${suit}"/>
+    <path d="M-6,-65 L0,-53 L6,-65 Z" fill="#fff"/><path d="M0,-60 L-2.6,-54 L0,-40 L2.6,-54 Z" fill="#dc2626"/>
+    <path d="M-6,-65 L-2,-47 M6,-65 L2,-47" stroke="#334155" stroke-width="1.6" fill="none"/>
+    <g class="armR"><rect x="12" y="-62" width="8" height="25" rx="4" fill="${suit}"/><circle cx="16" cy="-37" r="4" fill="${s.skin}"/></g>
+    <g transform="translate(0,-14)"><g class="head">${headSVG(s)}</g></g>
+    <g class="ceo-point">
+      <path d="M-11,-60 L-29,-80" stroke="${suit}" stroke-width="8.5" stroke-linecap="round"/>
+      <circle cx="-31" cy="-82" r="4.2" fill="${s.skin}"/>
+      <path d="M-31,-82 L-64,-114" stroke="#8a5a12" stroke-width="2.4" stroke-linecap="round"/><circle cx="-64.5" cy="-114.5" r="2.4" fill="#ef4444"/>
+    </g>
+  </g>`;
+}
+
+// Pantry: Tổng giám đốc ngồi sofa uống cà phê (trang trí, không tính doanh thu)
+const PANTRY_PEOPLE = [
+  { id:'p-truong', name:'Trường', role:'Tổng GĐ', x:21.5, y:15.75, style:'short', hair:'#1c1917', shirt:'#4b5563', skin:'#f1c9a0', beard:true },
+];
+function mugSVG(){
+  return `<g transform="translate(15,-33)"><path class="st-float" d="M-2,-11 q2,-3 0,-6 M2,-11 q2,-3 0,-6" stroke="#e2e8f0" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <rect x="-4.5" y="-8" width="9" height="10" rx="2" fill="#fff" stroke="#cbd5e1"/><rect x="-4.5" y="-8" width="9" height="2.6" rx="1" fill="#7c4a2d"/>
+    <path d="M4.5,-5.5 q4.5,0 4.5,3 q0,3 -4.5,3" stroke="#fff" stroke-width="1.8" fill="none"/></g>`;
+}
+
+function buildScene(){
+  items = [];
+  // building plinth & floor
+  outdoor();
+  add(-2000, box(-.45,-.45,-1.4, FW+.45, FD+.45, .9, '#2c313d', {top:'#2c313d', left:'#262a35', right:'#1e222b'}));
+  add(-1999, box(0,0,-.5, FW, FD, .5, '#e0c39e', {left:'#8a6a4c', right:'#6b513a'}));
+  let planks='';
+  for (let i=1;i<FD;i++){ const a=P(0,i,0), b=P(FW,i,0); planks += `<line x1="${f1(a.x)}" y1="${f1(a.y)}" x2="${f1(b.x)}" y2="${f1(b.y)}" stroke="rgba(120,80,40,.16)" stroke-width="1"/>`; }
+  for (let j=0;j<FD;j++) for (let i=(j%3)*2+1;i<FW;i+=6){ const a=P(i,j,0), b=P(i,j+1,0); planks += `<line x1="${f1(a.x)}" y1="${f1(a.y)}" x2="${f1(b.x)}" y2="${f1(b.y)}" stroke="rgba(120,80,40,.12)"/>`; }
+  add(-1998, planks);
+
+  // zone carpets
+  add(-1990, quad([[1,1.5,.01],[14.2,1.5,.01],[14.2,8.15,.01],[1,8.15,.01]], TEAM.sale.carpet, 'stroke="#22c55e" stroke-opacity=".55" stroke-width="2" stroke-dasharray="7 5"'));
+  add(-1990, quad([[1,11.4,.01],[14.2,11.4,.01],[14.2,18.25,.01],[1,18.25,.01]], TEAM.cskh.carpet, 'stroke="#3b82f6" stroke-opacity=".55" stroke-width="2" stroke-dasharray="7 5"'));
+  add(-1989, `<g transform="${onFloor(1.35,7.95)}"><text font-size="36" font-weight="800" fill="#22c55e" fill-opacity=".38" letter-spacing="4">TEAM SALE</text></g>`);
+  add(-1989, `<g transform="${onFloor(1.35,18.05)}"><text font-size="36" font-weight="800" fill="#3b82f6" fill-opacity=".38" letter-spacing="4">TEAM CSKH</text></g>`);
+  // meeting floor & pantry tiles
+  add(-1990, quad([[16.9,0,.01],[FW,0,.01],[FW,8,.01],[16.9,8,.01]], '#b9c4d6'));
+  let tiles = quad([[17.6,11.95,.01],[FW,11.95,.01],[FW,FD,.01],[17.6,FD,.01]], '#efe9df');
+  for (let i=18;i<FW;i++){ const a=P(i,11.95,.01), b=P(i,FD,.01); tiles += `<line x1="${f1(a.x)}" y1="${f1(a.y)}" x2="${f1(b.x)}" y2="${f1(b.y)}" stroke="rgba(0,0,0,.07)"/>`; }
+  for (let j=13;j<FD;j++){ const a=P(17.6,j,.01), b=P(FW,j,.01); tiles += `<line x1="${f1(a.x)}" y1="${f1(a.y)}" x2="${f1(b.x)}" y2="${f1(b.y)}" stroke="rgba(0,0,0,.07)"/>`; }
+  add(-1990, tiles);
+  add(-1988, quad([[19,15.6,.02],[24.6,15.6,.02],[24.6,19.4,.02],[19,19.4,.02]], '#f0a35e', 'stroke="#d9823a" stroke-width="2"'));
+
+  // walls
+  add(-1500, box(-.4,-.4,0,.4,FD+.4,WALL_H,'#e4ded5',{top:'#3a404e', right:'#ddd6cb', left:'#c9c1b5'}));
+  add(-1499, box(0,-.4,0,FW,.4,WALL_H,'#efeae2',{top:'#3a404e', left:'#eee8df'}));
+  add(-1498, box(0,-.02,0,FW,.05,.18,'#5b5f6b') + box(-.02,0,0,.05,FD,.18,'#5b5f6b'));
+
+  // back-wall windows
+  add(-1490, `<g transform="${onBack(.8,3.95)}">
+    <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc4f2"/><stop offset=".7" stop-color="#bfe4fa"/><stop offset="1" stop-color="#e6f5fd"/></linearGradient></defs>
+    <rect width="264" height="82" fill="url(#sky)"/>
+    <path d="M0,82 V58 H18 V44 H34 V60 H52 V36 H70 V54 H92 V48 H110 V30 H128 V56 H150 V40 H172 V62 H190 V46 H214 V34 H232 V58 H264 V82Z" fill="#9bb8d0" opacity=".75"/>
+    <path d="M20,0 L70,0 L18,82 L-6,82Z M120,0 L140,0 L88,82 L68,82Z" fill="#fff" opacity=".22"/>
+    <rect width="264" height="82" fill="none" stroke="#4b5363" stroke-width="5"/>
+    <path d="M88,0V82M176,0V82M0,41H264" stroke="#4b5363" stroke-width="3.5"/></g>`);
+  // revenue TV (dynamic)
+  add(-1489, `<g id="tv">${tvSVG()}</g>`);
+  // clock
+  add(-1488, `<g transform="${onBack(15.75,3.85)}"><circle cx="16" cy="16" r="14" fill="#fff" stroke="#3a404e" stroke-width="3"/><path id="clockHands" d="M16,16 L16,7 M16,16 L22,18" stroke="#1f2430" stroke-width="2.2" stroke-linecap="round"/><circle cx="16" cy="16" r="1.8" fill="#ef4444"/></g>`);
+  // logo sign on left wall
+  add(-1487, `<g transform="${onLeft(8.4,3.75)}"><rect width="190" height="62" rx="8" fill="#1b2130" stroke="#f97316" stroke-opacity=".6" stroke-width="2"/>
+    <rect x="12" y="13" width="36" height="36" rx="8" fill="#f97316"/><path d="M21,43V22h10v21M31,28h8v15M24,26h4M24,31h4M24,36h4M34,32h2M34,37h2" stroke="#1b1205" stroke-width="2.4" fill="none"/>
+    <text x="58" y="31" font-size="16" font-weight="800" fill="#fff" letter-spacing=".5">OFFICE LIVE HUB</text>
+    <text x="59" y="47" font-size="10" font-weight="700" fill="#f5b73b" letter-spacing="2">SALE &amp; CSKH</text></g>`);
+  // whiteboard
+  add(-1486, `<g transform="${onLeft(14.6,3.5)}"><rect width="140" height="66" rx="3" fill="#fbfbf8" stroke="#9aa1ad" stroke-width="3"/>
+    <text x="8" y="12" font-size="7.5" font-weight="800" fill="#334155">KẾ HOẠCH THÁNG 11</text>
+    ${[0,1,2,3].map(i=>`<rect x="8" y="${18+i*10}" width="5" height="5" rx="1" fill="${i<2?'#22c55e':'#cbd5e1'}"/><rect x="16" y="${19+i*10}" width="${[46,38,52,30][i]}" height="3" rx="1.5" fill="#94a3b8"/>`).join('')}
+    <rect x="84" y="10" width="22" height="20" fill="#fde047"/><rect x="110" y="10" width="22" height="20" fill="#f9a8d4"/><rect x="84" y="34" width="22" height="20" fill="#86efac"/><rect x="110" y="34" width="22" height="20" fill="#93c5fd"/></g>`);
+  // door
+  add(-1485, `<g transform="${onLeft(18.6,3.0)}"><rect width="58" height="90" rx="2" fill="#2b3240" stroke="#4b5363" stroke-width="3"/><rect x="6" y="6" width="46" height="70" fill="#4c6178" opacity=".7"/><rect x="18" y="-14" width="22" height="9" rx="2" fill="#16a34a"/><text x="29" y="-7.5" font-size="6.5" text-anchor="middle" font-weight="800" fill="#fff">EXIT</text></g>`);
+  // printer + filing cabinet near left wall
+  add(.3+10.2+.5, box(.25,9.8,0,.9,1.1,.95,'#dfe3ea',{top:'#eef1f5'}) + box(.35,10,.95,.7,.7,.25,'#c6ccd6'));
+  add(15.4+.6, box(15,.15,0,1.1,.75,1.6,'#9aa3b2',{top:'#b8c0cc'}));
+  add(14.6+.3, plant(14.6,.6,1.1,'#d6763a'));
+  add(.7+.7, plant(.7,.7,1.05));
+  add(.8+19.1, plant(.8,19.1,1.15,'#d6763a'));
+  add(15.6+10.2, plant(15.6,10.2,1.0));
+  add(.9+9.2, plant(.9,9.2,.8));
+  // water cooler
+  add(15.6+9.0, box(15.2,8.6,0,.75,.75,1.0,'#e5e9f0') + cyl(15.58,8.98,1.0,.28,.75,'#7cc4f2','#a8daf7'));
+
+  // desks
+  ['sale','cskh'].forEach(dept => { slotsOf(dept).forEach((sl,k)=>deskUnit(dept, sl, k)); leaderDesk(dept); });
+
+  // meeting room
+  add(16.95+2.6, box(16.9,0,0,.12,5.2,3.3,'#bfe3f5',{op:.3, stroke:'rgba(255,255,255,.75)', sw:1.2}) + box(16.88,5.15,0,.16,.16,3.3,'#3a404e'));
+  add(16.95+7.5, box(16.9,7,0,.12,1,3.3,'#bfe3f5',{op:.3, stroke:'rgba(255,255,255,.75)', sw:1.2}) + box(16.88,6.95,0,.16,.12,3.3,'#3a404e'));
+  add(-1484, `<g transform="${onBack(19.4,3.6)}"><rect x="-3" y="-3" width="138" height="64" rx="4" fill="#2a2f3a"/><rect width="132" height="58" rx="2" fill="#f8fafc"/>
+    <text x="7" y="12" font-size="7.5" font-weight="800" fill="#334155">HỌP GIAO BAN · 08:30</text>
+    ${[18,26,22,34,30,40,46].map((h,i)=>`<rect x="${10+i*17}" y="${54-h}" width="10" height="${h}" rx="1.5" fill="${i===6?'#f97316':'#3b82f6'}"/>`).join('')}</g>`);
+  add(21.5+4, box(19,3,0,5,2,.95,'#f7f7f5',{left:'#cfc7b8', right:'#b6ad9d'}) + box(20,3.6,.95,.8,.6,.02,'#fff') + box(22.4,3.8,.95,.7,.5,.02,'#fff'));
+  [[19.6,2.1],[21.1,2.1],[22.6,2.1]].forEach(([x,y])=> add(x+y+.4, box(x,y,0,.8,.7,.55,'#e8edf3',{top:'#f4f6f9'}) + box(x,y-.12,.55,.8,.14,.7,'#5b6577')));
+  [[19.6,5.25],[21.1,5.25],[22.6,5.25]].forEach(([x,y])=> add(x+y+.4, box(x,y,0,.8,.7,.55,'#e8edf3',{top:'#f4f6f9'})));
+  add(24.8+4.3, box(24.4,3.6,0,.7,.8,.55,'#e8edf3',{top:'#f4f6f9'}));
+  add(25.3+.8, plant(25.3,.8,1.0));
+  add(21.5+8.05+.5, box(17,7.95,0,9,.12,3.3,'#bfe3f5',{op:.28, stroke:'rgba(255,255,255,.8)', sw:1.2}) + box(16.92,7.92,0,.14,.18,3.3,'#3a404e') + box(17,7.95,3.22,9,.12,.08,'#3a404e'));
+
+  // pantry
+  add(22+11.8, box(17.6,11.6,0,8.4,.35,2.1,'#2f3a4c',{top:'#f5b73b'}));
+  add(22+11.85, `<g transform="${onYFace(19.6,11.96,2.05)}"><text y="15" font-size="15" font-weight="800" fill="#f5b73b" letter-spacing="6">PANTRY</text></g>`);
+  add(21.5+12.75, box(18.6,12.2,0,5,1.1,1.05,'#f4f1ea',{left:'#b9774a', right:'#8f5a37'}));
+  add(19+12.9, box(18.9,12.3,1.05,.85,.7,.85,'#2a2e38',{top:'#3a3f4c'}) + `<circle cx="${f1(P(19.3,13.0,1.6).x)}" cy="${f1(P(19.3,13.0,1.6).y)}" r="2.5" fill="#ef4444"/>`);
+  add(20.4+12.9, cyl(20.3,12.7,1.05,.1,.16,'#fff') + cyl(20.65,12.85,1.05,.1,.16,'#fde68a'));
+  add(21.6+12.9, box(21.4,12.35,1.05,1.1,.7,.55,'#e5e7eb',{top:'#f3f4f6'}) + box(21.45,13.0,1.12,.75,.06,.38,'#1f2937'));
+  add(23+12.9, cyl(23.1,12.75,1.05,.32,.12,'#f97316','#fb923c') + `<circle cx="${f1(P(23.0,12.7,1.3).x)}" cy="${f1(P(23.0,12.7,1.3).y)}" r="4" fill="#ef4444"/><circle cx="${f1(P(23.2,12.8,1.3).x+3)}" cy="${f1(P(23.2,12.8,1.3).y)}" r="4" fill="#facc15"/>`);
+  add(24.9+12.8, box(24.3,12.2,0,1.25,1.15,2.6,'#e2e8ee',{top:'#f1f5f9'}) + box(25.5,12.5,1.6,.03,.1,.6,'#94a3b8'));
+  // sofa + table + beanbags + foosball
+  add(21.4+15.6, box(19.6,15.25,0,3.8,1.15,.5,'#4f73b8',{top:'#6b8fd4'}) + box(19.6,15.15,.5,3.8,.3,.75,'#45679f',{top:'#5b7fc0'}) + box(19.45,15.15,0,.3,1.25,.8,'#45679f') + box(23.35,15.15,0,.3,1.25,.8,'#45679f'));
+  add(20.3+15.6, box(20.2,15.45,.5,.5,.15,.4,'#facc15') + box(22.3,15.45,.5,.5,.15,.4,'#f97316'));
+  add(21.6+17.6, cyl(21.6,17.6,0,.65,.5,'#8b5a3c','#a8714e') + cyl(21.4,17.5,.5,.1,.14,'#fff') + box(21.8,17.6,.5,.4,.3,.03,'#60a5fa'));
+  add(19.4+18.6, `<ellipse cx="${f1(P(19.4,18.6,.3).x)}" cy="${f1(P(19.4,18.6,.3).y)}" rx="22" ry="15" fill="#f97316"/><ellipse cx="${f1(P(19.4,18.6,.45).x)}" cy="${f1(P(19.4,18.6,.45).y)}" rx="16" ry="8" fill="#fb923c"/>`);
+  add(23.4+19, `<ellipse cx="${f1(P(23.4,19,.3).x)}" cy="${f1(P(23.4,19,.3).y)}" rx="22" ry="15" fill="#3b82f6"/><ellipse cx="${f1(P(23.4,19,.45).x)}" cy="${f1(P(23.4,19,.45).y)}" rx="16" ry="8" fill="#60a5fa"/>`);
+  add(25.0+17.1, box(24.6,15.9,0,1.0,2.2,.9,'#7c4a2d',{top:'#3d9b54'}) + quad([[24.65,17,.905],[25.55,17,.905]],'none','stroke="#fff" stroke-width="1.5"'));
+  add(25.4+19.4, plant(25.4,19.4,1.2,'#d6763a'));
+  add(18.2+19.4, plant(18.2,19.3,.9));
+  // a cat in the lounge
+  const cp = P(22.9,17.3,0);
+  add(22.9+17.3, `<g transform="translate(${f1(cp.x)},${f1(cp.y)})"><ellipse cx="0" cy="-5" rx="11" ry="6" fill="#f2a65a"/><circle cx="9" cy="-11" r="5.5" fill="#f2a65a"/><path d="M6,-15 l1,-5 l3,4z M11,-15 l2,-5 l1,5z" fill="#f2a65a"/><path d="M-11,-5 q-8,-2 -6,-10" stroke="#f2a65a" stroke-width="3" fill="none" stroke-linecap="round"/></g>`);
+
+  // characters
+  staff.forEach(s=>{
+    const p = P(s.seat.x, s.seat.y, 0);
+    add(s.seat.x+s.seat.y+.05, `<g class="char ${s.dept}" id="ch-${s.id}" data-id="${s.id}" transform="translate(${f1(p.x)},${f1(p.y)})">${chibiSVG(s)}</g>`);
+  });
+
+  // người trong phòng họp
+  MEETING.forEach(m=>{
+    const p = P(m.x, m.y, 0), s = { ...m, dept:'boss' };
+    add(m.x+m.y+.05, `<g class="char meet" transform="translate(${f1(p.x)},${f1(p.y)})">${m.stand ? ceoSVG(s) : m.back ? backSVG(s) : chibiSVG(s)}</g>`);
+    if (m.back) add(m.x+m.y+.15, box(m.x-.4, m.y+.35, .55, .8, .14, .55, '#5b6577'));   // lưng ghế
+  });
+
+  // Tổng giám đốc ở Pantry
+  PANTRY_PEOPLE.forEach(m=>{
+    const p = P(m.x, m.y, 0), s = { ...m, dept:'boss' };
+    add(m.x+m.y+.1, `<g class="char meet" transform="translate(${f1(p.x)},${f1(p.y)})">${chibiSVG(s)}${mugSVG()}</g>`);
+  });
+
+  // front low glass rails (always on top)
+  add(5000, box(0,FD-.08,0,FW,.08,.55,'#cfeaf7',{op:.35, stroke:'rgba(255,255,255,.7)'}) + box(FW-.08,0,0,.08,FD,.55,'#cfeaf7',{op:.35, stroke:'rgba(255,255,255,.7)'}));
+
+  items.sort((a,b)=>a.depth-b.depth);
+  const svg = $('#scene');
+  svg.setAttribute('width', STAGE_W); svg.setAttribute('height', STAGE_H);
+  svg.setAttribute('viewBox', `0 0 ${STAGE_W} ${STAGE_H}`);
+  svg.innerHTML = `<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity=".25"/></filter></defs>` + items.map(i=>i.svg).join('');
+  $('#stage').style.width = STAGE_W+'px'; $('#stage').style.height = STAGE_H+'px';
+  renderOverlay();
+  staff.forEach(updateChar);
+  applyFilter();
+  updateWallClock();
+}
+
+function tvSVG(){
+  const W=168, H=72, t = totals(), max = Math.max(...staff.map(s=>s.revenue), 1);
+  const pct = clamp(t.rev/DAILY_TARGET,0,1);
+  const list = [...staff].sort((a,b)=>a.dept===b.dept ? b.revenue-a.revenue : a.dept==='sale'?-1:1);
+  const bw = Math.min(10, (W-20)/list.length - 3);
+  return `<g transform="${onBack(10.1,3.95)}">
+    <rect x="-4" y="-4" width="${W+8}" height="${H+8}" rx="5" fill="#2a2f3a"/>
+    <rect width="${W}" height="${H}" rx="3" fill="#0e1320"/>
+    <text x="7" y="11" font-size="6.5" font-weight="800" fill="#94a3b8" letter-spacing=".8">DOANH THU HÔM NAY</text>
+    <circle cx="${W-30}" cy="8.8" r="2" fill="#22c55e" class="screen-glow"/><text x="${W-7}" y="11" text-anchor="end" font-size="6.5" font-weight="800" fill="#4ade80">LIVE</text>
+    <text x="7" y="26" font-size="14" font-weight="800" fill="#fff">${fmtD(t.rev)}</text>
+    <rect x="7" y="31" width="${W-14}" height="3.5" rx="1.75" fill="#253047"/><rect x="7" y="31" width="${(W-14)*pct}" height="3.5" rx="1.75" fill="#f5b73b"/>
+    <text x="${W-7}" y="26" text-anchor="end" font-size="8" font-weight="800" fill="#f5b73b">${Math.round(t.rev/DAILY_TARGET*100)}%</text>
+    ${list.map((s,i)=>{ const h = Math.max(2, s.revenue/max*28); return `<rect x="${10+i*(bw+3)}" y="${H-5-h}" width="${bw}" height="${h}" rx="1.2" fill="${TEAM[s.dept].color}"/>`; }).join('')}
+  </g>`;
+}
+function refreshTV(){ const g = $('#tv'); if (g) g.innerHTML = tvSVG(); }
+function updateWallClock(){
+  const el = $('#clockHands'); if (!el) return;
+  const d = new Date(), m = d.getMinutes(), h = d.getHours()%12 + m/60;
+  const a1 = h/12*Math.PI*2, a2 = m/60*Math.PI*2;
+  el.setAttribute('d', `M16,16 L${(16+Math.sin(a1)*6).toFixed(1)},${(16-Math.cos(a1)*6).toFixed(1)} M16,16 L${(16+Math.sin(a2)*10).toFixed(1)},${(16-Math.cos(a2)*10).toFixed(1)}`);
+}
+
+// ---------- CHIBI CHARACTER ----------
+function hairBack(s){
+  if (s.style==='long') return `<path d="M-19,-74 C-23,-50 -19,-42 -11,-40 L11,-40 C19,-42 23,-50 19,-74 Z" fill="${s.hair}"/>`;
+  if (s.style==='bob')  return `<path d="M-20,-74 C-22,-58 -19,-54 -13,-53 L13,-53 C19,-54 22,-58 20,-74 Z" fill="${s.hair}"/>`;
+  if (s.style==='bun')  return `<circle cx="0" cy="-93" r="8" fill="${s.hair}"/>`;
+  return '';
+}
+function hairFront(s){
+  if (s.style==='spiky') return `<path d="M-18.5,-68 L-21,-84 L-13,-82 L-11,-95 L-3,-87 L2,-98 L7,-87 L14,-94 L13,-82 L21,-84 L18.5,-68 C15,-77 7,-80 0,-79 C-7,-80 -15,-77 -18.5,-68Z" fill="${s.hair}"/>`;
+  if (s.style==='short') return `<path d="M-18.5,-67 C-21,-88 -8,-91 0,-91 C9,-91 21,-88 18.5,-67 C16,-75 10,-79 4,-78 C-2,-82 -12,-80 -18.5,-67 Z" fill="${s.hair}"/>`;
+  return `<path d="M-19,-66 C-21,-89 -8,-92 0,-92 C9,-92 21,-89 19,-66 C17,-76 11,-81 3,-80 C-1,-84 -10,-81 -14,-75 C-16,-72 -18,-69 -19,-66 Z" fill="${s.hair}"/>`;
+}
+function headSVG(s){
+  const cskh = s.dept==='cskh';
+  return `${hairBack(s)}
+    <circle cx="-17.5" cy="-69" r="3.6" fill="${shade(s.skin,-.08)}"/><circle cx="17.5" cy="-69" r="3.6" fill="${shade(s.skin,-.08)}"/>
+    <circle cx="0" cy="-70" r="18" fill="${s.skin}"/>
+    <g class="eyes-normal"><ellipse cx="-6.5" cy="-68" rx="2.3" ry="3" fill="#262833"/><ellipse cx="6.5" cy="-68" rx="2.3" ry="3" fill="#262833"/>
+      <circle cx="-5.7" cy="-69.2" r=".9" fill="#fff"/><circle cx="7.3" cy="-69.2" r=".9" fill="#fff"/></g>
+    <g class="eyes-happy"><path d="M-9.5,-67 Q-6.5,-72 -3.5,-67 M3.5,-67 Q6.5,-72 9.5,-67" stroke="#262833" stroke-width="2" fill="none" stroke-linecap="round"/></g>
+    <ellipse cx="-11" cy="-62.5" rx="3.4" ry="2" fill="#ff8a8a" opacity=".45"/><ellipse cx="11" cy="-62.5" rx="3.4" ry="2" fill="#ff8a8a" opacity=".45"/>
+    <path d="M-3,-60.5 Q0,-58 3,-60.5" stroke="#9a4a3a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    ${s.beard ? `<path d="M-18.2,-74 C-19.5,-56 -11,-46.5 0,-46 C11,-46.5 19.5,-56 18.2,-74 C16.5,-66 12,-60 6,-58.5 Q0,-57 -6,-58.5 C-12,-60 -16.5,-66 -18.2,-74 Z" fill="${s.hair}"/>
+      <path d="M-7,-60.2 Q-3.5,-63.4 0,-61.6 Q3.5,-63.4 7,-60.2 Q3.5,-59.6 0,-60.2 Q-3.5,-59.6 -7,-60.2 Z" fill="${s.hair}"/>
+      <path d="M-2.6,-56.4 Q0,-55 2.6,-56.4" stroke="#7a3b2e" stroke-width="1.3" fill="none" stroke-linecap="round"/>` : ''}
+    ${hairFront(s)}
+    ${cskh ? `<path d="M-19.5,-71 C-20,-97 20,-97 19.5,-71" stroke="#2b2f3a" stroke-width="3.2" fill="none"/>
+      <rect x="-23.5" y="-76" width="7" height="12" rx="3" fill="#3b82f6" stroke="#1e3a8a" stroke-width="1"/><rect x="16.5" y="-76" width="7" height="12" rx="3" fill="#3b82f6" stroke="#1e3a8a" stroke-width="1"/>
+      <path d="M-19,-66 Q-15,-55 -6,-57" stroke="#2b2f3a" stroke-width="2" fill="none"/><circle cx="-5.5" cy="-57" r="2.2" fill="#1f2430"/>` : ''}`;
+}
+function chibiSVG(s){
+  const sh = s.shirt, dark = shade(sh,-.15), team = TEAM[s.dept];
+  return `<ellipse class="sel-ring" cx="0" cy="-2" rx="36" ry="18" fill="${team.color}" fill-opacity=".14" stroke="${team.color}" stroke-width="3"/>
+  <ellipse cx="0" cy="0" rx="16" ry="7" fill="#000" opacity=".12"/>
+  <g class="inner">
+    <g class="bodyg">
+      <path d="M-15,-18 C-17,-42 -11,-51 0,-51 C11,-51 17,-42 15,-18 Z" fill="${sh}"/>
+      <path d="M-6,-50 L0,-43 L6,-50" stroke="#fff" stroke-width="2" fill="none" stroke-linejoin="round"/>
+      ${s.dept==='sale' ? `<path d="M0,-43 L-2.6,-38 L0,-28 L2.6,-38 Z" fill="${team.color}"/>` : `<rect x="4" y="-40" width="7" height="9" rx="1.5" fill="#fff" opacity=".85"/><rect x="5.5" y="-37" width="4" height="1.3" fill="${team.color}"/>`}
+      <g class="armL"><rect x="-20" y="-46" width="8" height="22" rx="4" fill="${dark}"/><circle cx="-15" cy="-24" r="4" fill="${s.skin}"/></g>
+      <g class="armR"><rect x="12" y="-46" width="8" height="22" rx="4" fill="${dark}"/><circle cx="15" cy="-24" r="4" fill="${s.skin}"/></g>
+    </g>
+    <g class="head" style="animation-delay:${(-Math.random()*3).toFixed(2)}s">${headSVG(s)}</g>
+    <g class="status" transform="translate(25,-98)"></g>
+  </g>`;
+}
+function avatarSVG(s){
+  const team = TEAM[s.dept];
+  return `<svg viewBox="-27 -101 54 54" xmlns="http://www.w3.org/2000/svg"><rect x="-27" y="-101" width="54" height="54" fill="${team.color}" fill-opacity=".18"/>
+    <path d="M-15,-44 C-17,-50 -11,-53 0,-53 C11,-53 17,-50 15,-44 Z" fill="${s.shirt}"/>${headSVG(s)}</svg>`;
+}
+function statusIcon(st){
+  const ring = (c, inner, cls='') => `<g class="st-pop ${cls}"><circle r="10.5" fill="${c}" stroke="#fff" stroke-width="2" filter="url(#sh)"/>${inner}</g>`;
+  switch(st){
+    case 'calling': return ring('#22c55e', `<g class="st-wig"><path transform="translate(-6.2,-6.2) scale(.52)" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="#fff"/></g>`) +
+      `<path class="wave" d="M13,-6 Q17,0 13,6" stroke="#22c55e" stroke-width="2" fill="none"/><path class="wave b" d="M16,-9 Q22,0 16,9" stroke="#22c55e" stroke-width="2" fill="none"/>`;
+    case 'consulting': return ring('#3b82f6', `<path d="M-5.5,-4.5 h11 a2,2 0 0 1 2,2 v5 a2,2 0 0 1 -2,2 h-6 l-3.5,3 v-3 h-1.5 a2,2 0 0 1 -2,-2 v-5 a2,2 0 0 1 2,-2z" fill="#fff"/>`);
+    case 'quoting': return ring('#8b5cf6', `<text y="4.6" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">₫</text>`);
+    case 'closed': return ring('#f5b73b', `<path d="M0,-6.5 L1.9,-2 L6.6,-1.6 L3,1.4 L4.1,6 L0,3.6 L-4.1,6 L-3,1.4 L-6.6,-1.6 L-1.9,-2Z" fill="#fff"/>`);
+    case 'waiting': return `<g class="st-pop"><path d="M-12,-9 h24 a4,4 0 0 1 4,4 v9 a4,4 0 0 1 -4,4 h-14 l-6,5 v-5 h-4 a4,4 0 0 1 -4,-4 v-9 a4,4 0 0 1 4,-4z" fill="#fff" stroke="#f5b73b" stroke-width="2" filter="url(#sh)"/>
+      <circle class="st-dot" cx="-6" cy="-.5" r="2.2" fill="#f59e0b"/><circle class="st-dot b" cx="0" cy="-.5" r="2.2" fill="#f59e0b"/><circle class="st-dot c" cx="6" cy="-.5" r="2.2" fill="#f59e0b"/></g>`;
+    case 'resting': return `<text class="st-float" x="-6" y="4" font-size="13" font-weight="800" fill="#cbd5e1" stroke="#475569" stroke-width=".6">z</text><text class="st-float b" x="2" y="-6" font-size="17" font-weight="800" fill="#cbd5e1" stroke="#475569" stroke-width=".6">Z</text>`;
+  }
+  return '';
+}
+function updateChar(s){
+  const el = document.getElementById('ch-'+s.id); if (!el) return;
+  el.querySelector('.status').innerHTML = statusIcon(s.status);
+  el.classList.toggle('typing', ['calling','consulting','quoting'].includes(s.status));
+  el.classList.toggle('happy', s.status==='closed');
+  el.classList.toggle('sleepy', s.status==='resting');
+  const tag = document.getElementById('tag-'+s.id);
+  if (tag){ tag.querySelector('.d').style.background = STATUS[s.status].color; tag.querySelector('.o').textContent = s.orders+' đơn'; }
+}
+
+// ---------- OVERLAY (tags, zone labels) ----------
+function renderOverlay(){
+  const ov = $('#overlay');
+  const zones = [
+  ];
+  ov.innerHTML = zones.map(z=>`<div class="zone-pill" style="left:${f1(z.p.x)}px;top:${f1(z.p.y)}px"><span style="color:${z.c}"><i data-lucide="${z.ic}"></i></span>${z.t}</div>`).join('') +
+    staff.map(s=>{ const p = P(s.seat.x, s.seat.y, 0);
+      return `<div class="tag ${nameTags?'':'hide'}" id="tag-${s.id}" data-id="${s.id}" style="left:${f1(p.x)}px;top:${f1(p.y-112)}px">
+        <span class="d" style="background:${STATUS[s.status].color}"></span>${s.leader?'<span title="Leader">👑</span>':''}${esc(s.name)}<span class="o-wrap text-[11px] font-medium" style="color:${TEAM[s.dept].soft}">· <span class="o">${s.orders} đơn</span></span></div>`; }).join('') +
+    (()=>{ const ceo = MEETING.find(m=>m.stand), sit = MEETING.filter(m=>!m.stand);
+      const pc = P(ceo.x, ceo.y, 0), mid = sit[Math.floor(sit.length/2)], pm = P(mid.x, mid.y, 0);
+      return `<div class="tag meet ${nameTags?'':'hide'}" style="left:${f1(pc.x+22)}px;top:${f1(pc.y-165)}px"><span class="d" style="background:#a78bfa"></span>👔 ${esc(ceo.name)}<span class="text-[11px] font-semibold" style="color:#c4b5fd">· ${ceo.role}</span></div>`
+           + `<div class="tag meet ${nameTags?'':'hide'}" style="left:${f1(pm.x)}px;top:${f1(pm.y-112)}px"><span class="d" style="background:#a78bfa"></span>${sit.map(m=>esc(m.name)).join(' · ')}</div>`; })() +
+    PANTRY_PEOPLE.map(m=>{ const p = P(m.x, m.y, 0);
+      return `<div class="tag meet ${nameTags?'':'hide'}" style="left:${f1(p.x)}px;top:${f1(p.y-114)}px"><span class="d" style="background:#f5b73b"></span>⭐ ${esc(m.name)}<span class="text-[11px] font-semibold" style="color:#fcd34d">· ${m.role}</span></div>`; }).join('');
+  icons();
+}
+
+// ---------- CAMERA ----------
+const cam = { s:1, x:0, y:0 };
+const VIEWS = {
+  all:    { name:'Toàn cảnh',          r:[0,0,FW,FD,WALL_H] },
+  sale:   { name:'Khu Team Sale',      r:[0,0,14.6,8.6,3.6] },
+  cskh:   { name:'Khu Team CSKH',      r:[0,10.6,14.6,19,3.4] },
+  lounge: { name:'Phòng họp & Pantry', r:[16.4,0,FW,FD,3.6] },
+};
+function worldRect(x0,y0,x1,y1,zt){
+  const ps = [P(x0,y0,zt),P(x1,y0,zt),P(x0,y1,0),P(x1,y1,0),P(x0,y1,zt),P(x1,y0,0)];
+  return [Math.min(...ps.map(p=>p.x)), Math.min(...ps.map(p=>p.y)), Math.max(...ps.map(p=>p.x)), Math.max(...ps.map(p=>p.y))];
+}
+function applyCam(smooth){
+  const st = $('#stage');
+  st.classList.toggle('smooth', !!smooth);
+  st.style.transform = `translate(${cam.x}px,${cam.y}px) scale(${cam.s})`;
+  st.style.setProperty('--inv', clamp(1/cam.s, .8, 1.3).toFixed(3));
+  st.classList.toggle('far', cam.s < .95);
+  $('#zoomLbl').textContent = Math.round(cam.s*100)+'%';
+}
+function focusBox([x0,y0,x1,y1], smooth=true, pad=.94){
+  const vp = $('#viewport'), vw = vp.clientWidth, vh = vp.clientHeight - 70;
+  cam.s = clamp(Math.min(vw/(x1-x0), vh/(y1-y0))*pad, .25, 3.5);
+  cam.x = vw/2 - (x0+x1)/2*cam.s;
+  cam.y = vh/2 - (y0+y1)/2*cam.s + 8;
+  applyCam(smooth);
+}
+function focusPreset(v, smooth=true){
+  currentView = v; const V = VIEWS[v];
+  const r = worldRect(...V.r); r[1] -= 60; // room for name tags
+  focusBox(r, smooth, v==='all' ? 1.0 : .94);
+  $('#viewName').textContent = V.name;
+  $$('.dock-btn[data-view]').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+}
+function cycleView(){ const k = Object.keys(VIEWS); focusPreset(k[(k.indexOf(currentView)+1)%k.length]); }
+function fitCenter(){ focusPreset(currentView); }
+function zoomBy(f, cx, cy){
+  const vp = $('#viewport'); cx ??= vp.clientWidth/2; cy ??= vp.clientHeight/2;
+  const ns = clamp(cam.s*f, .25, 3.5), k = ns/cam.s;
+  cam.x = cx - (cx-cam.x)*k; cam.y = cy - (cy-cam.y)*k; cam.s = ns;
+  applyCam(f!==1 && cx===vp.clientWidth/2);
+}
+function focusStaff(s){
+  const p = P(s.seat.x, s.seat.y, 0);
+  const vp = $('#viewport'); const ns = Math.max(cam.s, 1.25);
+  cam.s = ns; cam.x = vp.clientWidth/2 - p.x*ns; cam.y = (vp.clientHeight-70)/2 - (p.y-50)*ns;
+  applyCam(true);
+}
+function toggleFull(){
+  const el = $('#center');
+  if (!document.fullscreenElement) el.requestFullscreen?.(); else document.exitFullscreen?.();
+}
+
+// pan + wheel zoom
+(function(){
+  const vp = $('#viewport'); let drag=null;
+  vp.addEventListener('pointerdown', e=>{
+    if (e.button!==0) return;
+    drag = { x:e.clientX, y:e.clientY, cx:cam.x, cy:cam.y, moved:false, target:e.target };
+  });
+  window.addEventListener('pointermove', e=>{
+    if (!drag) return;
+    const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+    if (!drag.moved && Math.hypot(dx,dy)>4){ drag.moved=true; vp.classList.add('dragging'); }
+    if (drag.moved){ cam.x = drag.cx+dx; cam.y = drag.cy+dy; applyCam(false); }
+  });
+  window.addEventListener('pointerup', ()=>{
+    if (!drag) return;
+    if (!drag.moved){
+      const hit = drag.target.closest?.('.char,.tag');
+      if (hit) selectStaff(hit.dataset.id, false); else closeCard();
+    }
+    vp.classList.remove('dragging'); drag=null;
+  });
+  vp.addEventListener('wheel', e=>{
+    e.preventDefault();
+    const r = vp.getBoundingClientRect();
+    zoomBy(Math.exp(-e.deltaY*.0015), e.clientX-r.left, e.clientY-r.top);
+  }, { passive:false });
+  window.addEventListener('resize', ()=>{ resizeFx(); focusPreset(currentView, false); });
+})();
+
+// ---------- FILTER ----------
+function applyFilter(){
+  staff.forEach(s=>{
+    const show = viewFilter==='all' || s.dept===viewFilter || (viewFilter==='active' && STATUS[s.status].group==='active');
+    document.getElementById('ch-'+s.id)?.classList.toggle('dim', !show);
+    const tag = document.getElementById('tag-'+s.id);
+    if (tag){ tag.classList.toggle('dim', !show); tag.classList.toggle('hide', !nameTags); }
+  });
+  $$('#filterMenu button').forEach(b=>{
+    b.classList.toggle('on', b.dataset.f===viewFilter || (b.dataset.f==='names' && nameTags));
+  });
+  $('#filterBtn').classList.toggle('active', viewFilter!=='all');
+}
+$('#filterBtn').addEventListener('click', e=>{ e.stopPropagation(); $('#filterMenu').classList.toggle('hidden'); });
+$('#filterMenu').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.f==='names') nameTags = !nameTags; else viewFilter = b.dataset.f;
+  applyFilter(); $('#filterMenu').classList.add('hidden');
+});
+document.addEventListener('click', e=>{ if (!e.target.closest('#filterMenu,#filterBtn')) $('#filterMenu').classList.add('hidden'); });
+$$('.dock-btn[data-view]').forEach(b=>b.addEventListener('click', ()=>focusPreset(b.dataset.view)));
+
+// ---------- TOTALS & KPI ----------
+function aggregate(){
+  staff.forEach(s=>Object.assign(s, { revenue:0, gross:0, orders:0, cancels:0, lastAt:0 }));
+  todayOrders.forEach(o=>{
+    const { s } = staffForOrder(o); if (!s) return;
+    if (Number(o.status)===6){ s.cancels++; return; }
+    s.revenue += orderNet(o); s.gross += orderGross(o); s.orders++;
+    s.lastAt = Math.max(s.lastAt, parseTs(o.inserted_at));
+  });
+  const now = Date.now();
+  staff.forEach(s=>{
+    const ago = (now - s.lastAt)/60000;
+    s.status = !s.orders ? 'resting' : ago<=15 ? 'closed' : ago<=60 ? 'calling' : 'waiting';
+  });
+  // Chỉ dùng số hôm nay: KPI ngày = KPI tháng ÷ số ngày trong tháng
+  ['sale','cskh'].forEach(d=>{ teamTarget[d] = KPI_MONTH[d] / daysInMonth(); });
+  DAILY_TARGET = Math.max(1, teamTarget.sale + teamTarget.cskh);
+  ['sale','cskh'].forEach(d=>{
+    const n = Math.max(1, staff.filter(s=>s.dept===d && s.uuid).length);
+    staff.filter(s=>s.dept===d).forEach(s=>{ s.target = teamTarget[d]/n; });
+  });
+}
+function totals(){
+  const t = { rev:0, ord:0, gross:0, cancels:0, sale:0, cskh:0, saleOrd:0, cskhOrd:0 };
+  staff.forEach(s=>{ t.rev+=s.revenue; t.ord+=s.orders; t.gross+=s.gross; t.cancels+=s.cancels; t[s.dept]+=s.revenue; t[s.dept+'Ord']+=s.orders; });
+  t.monthSale = ((monthBase && monthBase.sale) || 0) + t.sale;
+  t.monthCskh = ((monthBase && monthBase.cskh) || 0) + t.cskh;
+  t.month = t.monthSale + t.monthCskh;
+  return t;
+}
+const shown = { rev:0, ord:0, roas:0 };
+function animateNum(el, key, to, fmt, pop){
+  const from = shown[key]; shown[key] = to;
+  const t0 = performance.now(), dur = 1100;
+  if (pop){ el.classList.remove('num-pop'); void el.offsetWidth; el.classList.add('num-pop'); }
+  const step = now => { const k = clamp((now-t0)/dur,0,1), e = 1-Math.pow(1-k,3); el.textContent = fmt(from+(to-from)*e); if (k<1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+function renderKPIs(pop=false){
+  const t = totals();
+  animateNum($('#kRev'), 'rev', t.rev, fmtVND, pop);
+  animateNum($('#kOrd'), 'ord', t.ord, v=>Math.round(v)+' đơn', pop);
+  animateNum($('#kRoas'), 'roas', t.rev/DAILY_TARGET*100, v=>Math.round(v)+'%', pop);
+  $('#sCalls').textContent = t.cancels;
+  $('#sRate').textContent = fmtShort(Math.max(0, t.gross - t.rev));
+  $('#sAvg').textContent = fmtShort(t.ord ? t.rev/t.ord : 0);
+  $('#sAds').textContent = fmtShort(t.gross);
+  const pct = t.rev/DAILY_TARGET*100;
+  $('#gPct').textContent = Math.round(pct)+'%';
+  $('#gOf').textContent = '/ '+fmtShort(DAILY_TARGET);
+  $('#gBar').style.width = clamp(pct,0,100)+'%';
+  $('#gSale').textContent = fmtShort(t.sale)+' / '+fmtShort(teamTarget.sale);
+  $('#gCskh').textContent = fmtShort(t.cskh)+' / '+fmtShort(teamTarget.cskh);
+  const left = DAILY_TARGET - t.rev;
+  $('#goalText').innerHTML = left>0 ? `🎯 Còn <b class="mono text-amber-300">${fmtD(left)}</b> nữa đạt mục tiêu hôm nay` : `🏆 Đã vượt mục tiêu hôm nay <b class="mono text-emerald-300">+${fmtD(-left)}</b>`;
+  $('#goalPill').classList.toggle('border-red-500/40', left>0); $('#goalPill').classList.toggle('border-emerald-500/50', left<=0);
+  refreshTV();
+}
+
+// ---------- LEFT LIST ----------
+function renderCounts(){
+  const g = { active:0, wait:0, rest:0 }; staff.forEach(s=>g[STATUS[s.status].group]++);
+  $('#cActive').textContent = g.active; $('#cWait').textContent = g.wait; $('#cRest').textContent = g.rest;
+  const mapped = staff.filter(s=>s.uuid).length;
+  $('#staffCount').textContent = `${staff.length} nhân sự · ${mapped}/${staff.length} đã gán UUID`;
+  $('#tSale').textContent = staff.filter(s=>s.dept==='sale').length;
+  $('#tCskh').textContent = staff.filter(s=>s.dept==='cskh').length;
+}
+function kpiColor(p){ return p>=100 ? 'linear-gradient(90deg,#f5b73b,#facc15)' : p>=70 ? '#22c55e' : p>=40 ? '#3b82f6' : '#ef4444'; }
+function renderList(flashId){
+  const q = norm(searchQ);
+  const list = staff.filter(s => (q ? (norm(s.name).includes(q) || norm(s.full).includes(q)) : s.dept===currentTab)).sort((a,b)=>b.revenue-a.revenue);
+  $('#teamHead').textContent = q ? `Kết quả tìm kiếm · ${list.length}` : `Team ${TEAM[currentTab].name} · hôm nay`;
+  $('#teamRev').textContent = q ? '' : fmtD(staff.filter(s=>s.dept===currentTab).reduce((a,s)=>a+s.revenue,0));
+  $('#staffList').innerHTML = list.map(s=>{
+    const st = STATUS[s.status], p = s.target ? Math.round(s.revenue/s.target*100) : 0;
+    return `<div class="staff-row ${s.id===selectedId?'sel':''} ${s.id===flashId?'flash':''}" data-id="${s.id}">
+      <div class="avatar">${avatarHTML(s,46)}<span class="sdot" style="background:${st.color}"></span></div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1.5 min-w-0"><span class="font-semibold text-[15px] truncate">${esc(s.full)}</span>${s.leader?`<span class="badge flex-none" style="background:rgba(245,183,59,.16);color:#f5b73b">LEADER</span>`:''}</div>
+          <div class="mono text-[12.5px] font-bold" style="color:${TEAM[s.dept].soft}">${fmtShort(s.revenue)}</div>
+        </div>
+        <div class="flex items-center justify-between text-[12.5px] mt-0.5">
+          ${s.uuid ? `<div class="flex items-center gap-1.5 truncate" style="color:${s.status==='resting'?'#9ca3af':s.status==='waiting'?'#fbbf24':'#cbd5e1'}"><i data-lucide="${st.icon}"></i>${st.label}</div>`
+                   : `<div class="flex items-center gap-1.5 text-red-400"><i data-lucide="link-2-off"></i>Chưa gán UUID</div>`}
+          <div class="muted mono text-[11.5px]">${s.orders} đơn${s.cancels?` · <span class="text-red-400">${s.cancels} hủy</span>`:''}</div>
+        </div>
+        <div class="kbar mt-2"><div style="width:${clamp(p,0,100)}%;background:${kpiColor(p)}"></div></div>
+        <div class="flex justify-between text-[10.5px] muted mt-1 mono"><span>KPI ngày ${p}%</span><span>mục tiêu ~${fmtShort(s.target)}</span></div>
+      </div></div>`;
+  }).join('') || `<div class="text-center muted text-sm py-10">Không tìm thấy nhân viên</div>`;
+  icons();
+}
+$('#staffList').addEventListener('click', e=>{ const r = e.target.closest('.staff-row'); if (r) selectStaff(r.dataset.id, true); });
+$('#search').addEventListener('input', e=>{ searchQ = e.target.value; renderList(); });
+$$('#tabs .tab').forEach(b=>b.addEventListener('click', ()=>{
+  currentTab = b.dataset.tab; searchQ=''; $('#search').value='';
+  $$('#tabs .tab').forEach(x=>x.classList.toggle('active', x===b)); renderList();
+}));
+
+// ---------- STAFF CARD ----------
+function selectStaff(id, focus){
+  const s = staff.find(x=>x.id===id); if (!s) return;
+  selectedId = id;
+  $$('.char.selected').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('ch-'+id)?.classList.add('selected');
+  if (!searchQ && currentTab!==s.dept){ currentTab = s.dept; $$('#tabs .tab').forEach(x=>x.classList.toggle('active', x.dataset.tab===s.dept)); }
+  renderList();
+  document.querySelector(`.staff-row[data-id="${id}"]`)?.scrollIntoView({ block:'nearest', behavior:'smooth' });
+  if (focus) focusStaff(s);
+  renderCard();
+}
+function renderCard(){
+  const s = staff.find(x=>x.id===selectedId); const c = $('#staffCard');
+  if (!s){ c.classList.add('hidden'); return; }
+  const st = STATUS[s.status], p = s.target ? Math.round(s.revenue/s.target*100) : 0, aov = s.orders ? s.revenue/s.orders : 0;
+  c.innerHTML = `<div class="flex items-start gap-3">
+      <div class="avatar !w-14 !h-14">${avatarHTML(s,56)}<span class="sdot" style="background:${st.color};border-color:var(--panel2)"></span></div>
+      <div class="flex-1 min-w-0"><div class="font-bold text-[16px] flex items-center gap-2">${esc(s.full)}${s.leader?`<span class="badge flex-none" style="background:rgba(245,183,59,.16);color:#f5b73b">LEADER</span>`:''}</div>
+        <div class="flex items-center gap-2 mt-1"><span class="badge b-${s.dept}">${TEAM[s.dept].name}</span><span class="text-[12px] flex items-center gap-1" style="color:${st.color}"><i data-lucide="${st.icon}"></i>${st.label}</span></div>
+        ${s.note?`<div class="text-[11px] muted mt-1">${esc(s.note)}</div>`:''}</div>
+      <button class="muted hover:text-white text-[18px]" onclick="closeCard()"><i data-lucide="x"></i></button></div>
+    <div class="grid grid-cols-3 gap-2 mt-3 text-center">
+      <div class="mini !p-2"><div class="mono font-bold text-[14px]" style="color:${TEAM[s.dept].soft}">${fmtShort(s.revenue)}</div><div class="text-[10.5px] muted">Net hôm nay</div></div>
+      <div class="mini !p-2"><div class="mono font-bold text-[14px]">${s.orders}</div><div class="text-[10.5px] muted">Đơn</div></div>
+      <div class="mini !p-2"><div class="mono font-bold text-[14px]">${fmtShort(aov)}</div><div class="text-[10.5px] muted">AOV</div></div></div>
+    <div class="flex justify-between text-[11.5px] mt-3 muted"><span>KPI ngày</span><span class="mono">${fmtD(s.revenue)} / ${fmtShort(s.target)} · <b class="text-white">${p}%</b></span></div>
+    <div class="kbar !h-2 mt-1.5"><div style="width:${clamp(p,0,100)}%;background:${kpiColor(p)}"></div></div>
+    <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-[11.5px] mt-3 muted mono">
+      <span>Gross: <b class="text-slate-200">${fmtShort(s.gross)}</b></span><span>Giảm giá: <b class="text-slate-200">${fmtShort(s.gross-s.revenue)}</b></span>
+      <span>Đơn hủy: <b class="text-red-400">${s.cancels}</b></span><span>Đơn gần nhất: <b class="text-slate-200">${s.lastAt?hhmm(new Date(s.lastAt)):'—'}</b></span>
+      <span class="col-span-2 truncate">UUID: ${s.uuid?esc(s.uuid):'<span class="text-red-400">chưa gán</span>'}</span></div>
+    <button class="btn-glow ${s.dept==='sale'?'btn-sale':'btn-cskh'} w-full justify-center mt-3" onclick="testOrder('${s.dept}','${s.id}')">🎉 Thử hiệu ứng (không tính doanh thu)</button>`;
+  c.classList.remove('hidden'); icons();
+}
+function closeCard(){
+  selectedId = null; $('#staffCard').classList.add('hidden');
+  $$('.char.selected').forEach(el=>el.classList.remove('selected')); renderList();
+}
+
+// ---------- FEED & LEADERBOARD ----------
+const FEED_ICON = { order:'badge-dollar-sign', cancel:'circle-x', sys:'info' };
+function pushSys(text){ sysFeed.unshift({ id:'sys'+(++feedSeq), t:new Date(), type:'sys', sid:null, text }); sysFeed = sysFeed.slice(0,20); }
+function rebuildFeed(){
+  const ords = todayOrders.map(o=>{
+    const { s } = staffForOrder(o); if (!s) return null;
+    const st = Number(o.status), net = orderNet(o);
+    return { id:String(o.id), t:new Date(parseTs(o.inserted_at)), sid:s.id, type: st===6 ? 'cancel' : 'order', amount:net, src:orderSource(o),
+      text: st===6 ? `Đơn #${esc(o.id)} đã <b class="text-red-400">hủy</b> · ${fmtD(net)} không tính doanh thu`
+        : `${s.dept==='sale'?'Chốt đơn':'Ra đơn'} <b class="${s.dept==='sale'?'text-emerald-400':'text-blue-400'} mono">${fmtD(net)}</b> · #${esc(o.id)} <span class="muted">(${esc(orderSource(o))})</span>` };
+  }).filter(Boolean);
+  feed = [...ords, ...sysFeed].sort((a,b)=>b.t-a.t);
+  tickerItems = ords.filter(f=>f.type==='order').sort((a,b)=>b.t-a.t).slice(0,6)
+    .map(f=>tickerOrderHTML(staff.find(x=>x.id===f.sid), f.amount, f.src, f.t));
+}
+function renderFeed(){
+  const list = feed.filter(f => feedFilter==='all' || f.type===feedFilter).slice(0,60);
+  $('#feed').innerHTML = list.map(f=>{
+    const s = staff.find(x=>x.id===f.sid);
+    const isO = f.type==='order', isC = f.type==='cancel';
+    const head = s ? `<span class="av-mini">${avatarHTML(s,24)}<span class="sd" style="background:${STATUS[s.status].color}"></span></span>
+          <span class="font-semibold text-[14px] truncate">${esc(s.full)}</span><span class="badge b-${s.dept}">${TEAM[s.dept].name}</span>
+          ${isO && isNew(f.id)?`<span class="badge" style="background:rgba(245,183,59,.16);color:#f5b73b">ĐƠN MỚI</span>`:''}`
+      : `<span class="font-semibold text-[14px] text-amber-300">Hệ thống</span>`;
+    return `<div class="feed-item ${isO?'order '+s.dept:''} ${animIds.has(f.id)?'enter':''}">
+      <div class="flex items-center justify-between"><div class="flex items-center gap-2 min-w-0">${head}</div>
+        <span class="mono text-[12px] muted">${hhmm(f.t)}</span></div>
+      <div class="flex items-start gap-2.5 mt-2 text-[13.5px] text-slate-300">
+        <span class="fi" ${isO?`style="background:rgba(34,197,94,.18);color:#4ade80"`:isC?`style="background:rgba(239,68,68,.16);color:#f87171"`:''}><i data-lucide="${FEED_ICON[f.type]}"></i></span>
+        <span class="pt-0.5 leading-snug">${f.text}</span></div></div>`;
+  }).join('') || `<div class="text-center muted text-sm py-10">${mode ? 'Hôm nay chưa có đơn của Team Sale / CSKH' : 'Chưa kết nối Pancake POS'}</div>`;
+  icons();
+}
+function renderBoard(){
+  const list = [...staff].sort((a,b)=>b.revenue-a.revenue), max = Math.max(1, list[0]?.revenue||0);
+  const medal = ['🥇','🥈','🥉'];
+  $('#board').innerHTML = list.map((s,i)=>`<div class="feed-item flex items-center gap-3 ${i===0&&s.revenue?'!border-amber-400/50':''}">
+      <div class="w-7 text-center text-[18px] font-bold mono ${i>2?'muted !text-[14px]':''}">${s.revenue?(medal[i]||i+1):i+1}</div>
+      <div class="avatar !w-10 !h-10">${avatarHTML(s,40)}</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between"><div class="flex items-center gap-2 min-w-0"><span class="font-semibold text-[14px] truncate">${esc(s.full)}</span><span class="badge b-${s.dept}">${TEAM[s.dept].name}</span>${s.leader?`<span class="badge flex-none" style="background:rgba(245,183,59,.16);color:#f5b73b">LEADER</span>`:''}</div>
+        <span class="mono text-[13px] font-bold" style="color:${TEAM[s.dept].soft}">${fmtShort(s.revenue)}</span></div>
+        <div class="kbar mt-1.5"><div style="width:${s.revenue/max*100}%;background:${TEAM[s.dept].color}"></div></div>
+        <div class="text-[11px] muted mt-1 mono">${s.orders} đơn · AOV ${fmtShort(s.orders?s.revenue/s.orders:0)} · KPI ngày ${s.target?Math.round(s.revenue/s.target*100):0}%</div></div></div>`).join('');
+  icons();
+}
+$$('#chips .chip').forEach(c=>c.addEventListener('click', ()=>{
+  feedFilter = c.dataset.c; $$('#chips .chip').forEach(x=>x.classList.toggle('on', x===c));
+  if (rightTab!=='feed') $('[data-rtab="feed"]').click(); renderFeed();
+}));
+$$('[data-rtab]').forEach(b=>b.addEventListener('click', ()=>{
+  rightTab = b.dataset.rtab; $$('[data-rtab]').forEach(x=>x.classList.toggle('active', x===b));
+  $('#feed').classList.toggle('hidden', rightTab!=='feed'); $('#board').classList.toggle('hidden', rightTab!=='board');
+  $('#chips').classList.toggle('hidden', rightTab!=='feed');
+  if (rightTab==='board') renderBoard();
+}));
+
+// ---------- TICKER ----------
+function tickerOrderHTML(s, amount, source, t=new Date()){
+  return s.dept==='sale'
+    ? `🔥 [${hhmm(t)}] <b>${esc(s.full)}</b> (Sale) vừa chốt đơn <span class="amt">${fmtD(amount)}</span> từ ${esc(source)}`
+    : `💬 [${hhmm(t)}] <b>${esc(s.full)}</b> (CSKH) vừa tạo đơn <span class="amt" style="color:#7fb0ff">${fmtD(amount)}</span> từ ${esc(source)}`;
+}
+function renderTicker(){
+  const t = totals(), pct = Math.round(t.rev/DAILY_TARGET*100);
+  const top = [...staff].sort((a,b)=>b.revenue-a.revenue)[0];
+  const extra = mode ? [
+    `🚀 Doanh thu hôm nay đã đạt <b class="text-amber-300">${pct}%</b> mục tiêu ngày (${fmtD(t.rev)} / ${fmtD(DAILY_TARGET)})`,
+    top && top.revenue ? `🏆 Top 1 hôm nay: <b>${esc(top.full)}</b> (${TEAM[top.dept].name}) · ${fmtD(top.revenue)}` : `⏳ Hôm nay chưa có đơn nào, cố lên cả nhà!`,
+    `📊 Hôm nay: ${t.ord} đơn · Sale ${fmtD(t.sale)} · CSKH ${fmtD(t.cskh)} · AOV ${fmtD(t.ord ? t.rev/t.ord : 0)}`,
+  ] : [`🔌 Chưa kết nối Pancake POS · bấm biểu tượng phích cắm ở góc phải để cài đặt`];
+  const all = [...tickerItems, ...extra];
+  const one = all.map(h=>`<span class="it">${h}</span><span class="sepd">|</span>`).join('');
+  const tr = $('#ticker'); tr.innerHTML = one + one;
+  requestAnimationFrame(()=>{ tr.style.setProperty('--dur', Math.max(30, tr.scrollWidth/2/75)+'s'); });
+}
+
+// ---------- SOUND (Web Audio "ting ting") ----------
+let actx = null;
+function ensureAudio(){ try { actx = actx || new (window.AudioContext||window.webkitAudioContext)(); if (actx.state==='suspended') actx.resume(); } catch(e){} }
+['pointerdown','keydown'].forEach(ev=>window.addEventListener(ev, ensureAudio, { once:true }));
+function ting(big){
+  if (!soundOn) return; ensureAudio(); if (!actx) return;
+  const now = actx.currentTime + .02;
+  const notes = big ? [[1318.5,0],[1760,.13],[2093,.26],[1318.5,.45],[1760,.58],[2637,.71]] : [[1318.5,0],[1760,.14],[1318.5,.4],[1760,.54]];
+  notes.forEach(([f,t])=>{
+    [[f,'sine',.32],[f*2,'triangle',.06]].forEach(([fr,type,g0])=>{
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = type; o.frequency.value = fr;
+      g.gain.setValueAtTime(.0001, now+t); g.gain.exponentialRampToValueAtTime(g0, now+t+.008); g.gain.exponentialRampToValueAtTime(.0001, now+t+.55);
+      o.connect(g).connect(actx.destination); o.start(now+t); o.stop(now+t+.6);
+    });
+  });
+}
+function toggleSound(){
+  soundOn = !soundOn; const b = $('#soundBtn');
+  b.classList.toggle('on', soundOn); b.innerHTML = `<i data-lucide="${soundOn?'volume-2':'volume-x'}"></i>`; icons();
+  if (soundOn){ ensureAudio(); ting(); }
+}
+
+// ---------- CONFETTI ----------
+const fx = $('#fx'), fctx = fx.getContext('2d'); let parts = [], fxRunning = false;
+function resizeFx(){ const r = $('#center').getBoundingClientRect(), d = window.devicePixelRatio||1; fx.width = r.width*d; fx.height = r.height*d; fctx.setTransform(d,0,0,d,0,0); }
+function confetti(x, y, n=120, colors){
+  colors = colors || ['#22c55e','#f5b73b','#3b82f6','#ef4444','#a855f7','#06b6d4','#facc15','#ffffff'];
+  for (let i=0;i<n;i++){
+    const a = rnd(-Math.PI*.95, -Math.PI*.05), v = rnd(4,11);
+    parts.push({ x, y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, w:rnd(5,10), h:rnd(3,6), r:rnd(0,6.28), vr:rnd(-.25,.25), c:pick(colors), life:rnd(110,190), sway:rnd(0,6.28), shape:Math.random()<.25?'c':'r' });
+  }
+  if (!fxRunning){ fxRunning = true; requestAnimationFrame(fxLoop); }
+}
+function fxLoop(){
+  const r = $('#center').getBoundingClientRect(); fctx.clearRect(0,0,r.width,r.height);
+  parts = parts.filter(p=>p.life>0);
+  parts.forEach(p=>{
+    p.vy += .16; p.vx *= .985; p.vy *= .985; p.vy = Math.min(p.vy, 2.6);
+    p.sway += .08; p.x += p.vx + Math.sin(p.sway)*.7; p.y += p.vy; p.r += p.vr; p.life--;
+    fctx.save(); fctx.globalAlpha = clamp(p.life/40,0,1); fctx.translate(p.x,p.y); fctx.rotate(p.r); fctx.fillStyle = p.c;
+    if (p.shape==='c'){ fctx.beginPath(); fctx.arc(0,0,p.h*.7,0,6.28); fctx.fill(); } else fctx.fillRect(-p.w/2,-p.h/2,p.w,p.h*Math.abs(Math.cos(p.sway)));
+    fctx.restore();
+  });
+  if (parts.length) requestAnimationFrame(fxLoop); else { fxRunning = false; fctx.clearRect(0,0,r.width,r.height); }
+}
+
+// ---------- TOAST ----------
+function toast(s, amount, msg, source){
+  const el = document.createElement('div');
+  el.className = 'toast '+s.dept;
+  el.innerHTML = `<div class="flex items-center gap-3"><div class="avatar !w-10 !h-10">${avatarHTML(s,40)}</div>
+    <div><div class="text-[12px] muted font-semibold">🎉 ${s.dept==='sale'?'Đơn mới · Team Sale':'Đơn up-sale · Team CSKH'} · ${esc(source)}</div>
+    <div class="font-bold text-[14px]">${esc(s.name)} chốt <span class="mono ${s.dept==='sale'?'text-emerald-400':'text-blue-400'}">${fmtD(amount)}</span></div>
+    <div class="text-[12px] text-slate-400">${esc(msg)}</div></div></div>`;
+  $('#toasts').prepend(el);
+  while ($('#toasts').children.length>3) $('#toasts').lastChild.remove();
+  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(), 400); }, 4800);
+}
+
+// ---------- CELEBRATION ----------
+function celebrate(s, amount, msg){
+  const el = document.getElementById('ch-'+s.id); if (!el) return;
+  el.classList.remove('jump'); void el.getBoundingClientRect(); el.classList.add('jump');
+  setTimeout(()=>el.classList.remove('jump'), 2600);
+  // speech bubble
+  const p = P(s.seat.x, s.seat.y, 0), [c1,c2] = TEAM[s.dept].bubble;
+  const b = document.createElement('div');
+  b.className = 'bubble'; b.style.left = f1(p.x)+'px'; b.style.top = f1(p.y-140)+'px';
+  b.innerHTML = `<div class="in" style="background:linear-gradient(135deg,${c1},${c2});--tail:${c2};--glow:${c1}">+${fmtD(amount)} - ${esc(msg)}<small>${esc(s.name)} · ${TEAM[s.dept].name}</small></div>`;
+  $('#bubbles').appendChild(b); setTimeout(()=>b.remove(), 5300);
+  // confetti from the character's on-screen position
+  const r = el.getBoundingClientRect(), cr = $('#center').getBoundingClientRect();
+  const big = amount >= 5000000;
+  confetti(r.left+r.width/2-cr.left, r.top+r.height*.35-cr.top, big?260:130);
+  if (big){
+    setTimeout(()=>confetti(cr.width*.25, cr.height*.3, 120), 250);
+    setTimeout(()=>confetti(cr.width*.75, cr.height*.3, 120), 450);
+    const f = document.createElement('div'); f.className='flash-gold'; $('#center').appendChild(f); setTimeout(()=>f.remove(),1400);
+  }
+  ting(big);
+}
+
+// ---------- PANCAKE POS SYNC ----------
+const CHEERS = { sale:['Chốt khách VIP!','Nổ đơn rồi!','Khách chốt ngay!','Đơn đẹp!'], cskh:['Chăm sóc ra đơn!','Khách cũ quay lại!','Up-sale thành công!','Ra đơn rồi!'] };
+
+function setBanner(kind, text){
+  const b = $('#dataBanner');
+  if (!kind){ b.classList.add('hidden'); return; }
+  b.classList.remove('hidden');
+  b.className = 'flex items-center gap-2 px-3.5 py-2 rounded-full text-[12.5px] font-semibold border shadow-lg pointer-events-auto max-w-[560px] ' +
+    (kind==='err' ? 'border-red-500/50 bg-[#2a1618]/95 text-red-200 cursor-pointer' : 'border-amber-400/40 bg-[#1b1d26]/95 text-amber-200');
+  b.innerHTML = (kind==='err' ? '<i data-lucide="triangle-alert"></i>' : '<i data-lucide="loader-circle" class="animate-spin"></i>') + `<span class="truncate">${esc(text)}</span>`;
+  b.onclick = kind==='err' ? openModal : null;
+  icons();
+}
+let needLogin = false;
+async function detectMode(){
+  try { const r = await fetch('api/health', { cache:'no-store' });
+    if (r.ok){ const j = await r.json(); if (j && j.mode==='vercel'){ needLogin = !j.authed; return 'vercel'; } } } catch(e){}
+  try { const r = await fetch('pos-health', { cache:'no-store' }); if (r.ok){ const j = await r.json(); if (j && j.ok) return 'proxy'; } } catch(e){}
+  return cfg.apiKey ? 'direct' : null;
+}
+function posUrl(path, params){
+  const q = new URLSearchParams(params);
+  if (mode==='vercel'){ q.delete('updateStatus'); return 'api/orders?' + q.toString(); }
+  if (mode==='direct') q.set('api_key', cfg.apiKey);
+  return (mode==='proxy' ? 'pos/' : 'https://pos.pages.fm/api/v1/') + path + '?' + q.toString();
+}
+async function fetchPage(startMs, endMs, page, size){
+  if (mode==='vercel') endMs = Math.floor(endMs/10000)*10000;   // nhiều người xem dùng chung bộ nhớ đệm
+  let r;
+  try {
+    r = await fetch(posUrl(`shops/${encodeURIComponent(cfg.shopId)}/orders`, {
+      page_size:size, page_number:page, updateStatus:'inserted_at',
+      startDateTime:Math.floor(startMs/1000), endDateTime:Math.floor(endMs/1000) }), { cache:'no-store' });
+  } catch(e){
+    throw new Error(mode==='direct' ? 'Trình duyệt chặn gọi thẳng Pancake (CORS). Hãy chạy bằng pos-proxy.py.' : 'Không kết nối được proxy POS (pos-proxy.py đã tắt?).');
+  }
+  if (mode==='vercel' && r.status===401){ showLogin(); throw new Error('Cần đăng nhập để xem.'); }
+  if (mode==='vercel' && r.status===503){ const j = await r.json().catch(()=>({})); throw new Error(j.error || 'Server chưa cấu hình.'); }
+  if (r.status===401 || r.status===403) throw new Error(`API key Pancake không hợp lệ hoặc hết hạn (HTTP ${r.status}).`);
+  if (r.status===429) throw new Error('Pancake báo gọi quá nhiều (429), sẽ thử lại.');
+  if (!r.ok) throw new Error(`Pancake trả lỗi HTTP ${r.status}.`);
+  const j = await r.json();
+  if (j && j.success===false) throw new Error(j.message || 'Pancake báo lỗi.');
+  return j;
+}
+async function fetchOrders(startMs, endMs, label){
+  const all = []; let page = 1, total = 1;
+  do {
+    if (firstLoad) setBanner('load', `Đang tải đơn POS ${label} · trang ${page}${total>1?'/'+total:''}…`);
+    const j = await fetchPage(startMs, endMs, page, 100);
+    all.push(...(j.data || []));
+    total = Number(j.total_pages) || 1;
+    page++;
+  } while (page <= total && page <= 300);
+  return all;
+}
+// Doanh thu từ đầu tháng đến 00:00 hôm nay (ngày đã qua: cache theo ngày)
+async function loadMonthBase(force){
+  const today = vnDayStart(), mStart = vnMonthStart();
+  const sig = cfg.shopId + '|' + staff.map(s=>s.uuid||'').join(',');
+  const key = 'olh_month_' + dateKey(today);
+  const cached = store.get(key, null);
+  if (!force && cached && cached.sig===sig){ monthBase = cached; return; }
+  const base = { sale:0, cskh:0, orders:0, sig };
+  if (today > mStart){
+    const orders = await fetchOrders(mStart, today, 'từ đầu tháng');
+    orders.forEach(o=>{
+      if (Number(o.status)===6) return;
+      const { s } = staffForOrder(o); if (!s) return;
+      base[s.dept] += orderNet(o); base.orders++;
+    });
+  }
+  monthBase = base; store.set(key, base);
+}
+const hhmmss = d => { const v = new Date(+d + VN_MS); return [v.getUTCHours(), v.getUTCMinutes(), v.getUTCSeconds()].map(x=>String(x).padStart(2,'0')).join(':'); };
+function updRefreshLbl(){ $('#simLbl').textContent = lastSync ? 'Cập nhật ' + hhmmss(lastSync) : 'Làm mới'; }
+// Gộp đơn vào danh sách hôm nay, phát hiện đơn mới / đơn vừa hủy
+function ingest(list, full){
+  const fresh = [];
+  if (full) todayMap = new Map();
+  list.forEach(o=>{
+    const id = String(o.id), st = Number(o.status), prev = seen.get(id);
+    const { s } = staffForOrder(o);
+    if (!firstLoad && s){
+      if (prev===undefined && st!==6) fresh.push({ o, s });
+      else if (prev!==undefined && prev!==6 && st===6) pushSys(`Đơn #${esc(o.id)} của <b>${esc(s.full)}</b> vừa chuyển sang hủy · trừ ${fmtD(orderNet(o))}`);
+    }
+    seen.set(id, st); todayMap.set(id, o);
+  });
+  todayOrders = [...todayMap.values()];
+  lastSync = new Date(); lastError = '';
+  setBanner(staff.some(s=>s.uuid) ? null : 'err', 'Chưa gán UUID nhân sự: bấm để mở Kết nối POS');
+  const sig = todayOrders.map(o=>`${o.id}:${o.status}:${orderNet(o)}`).sort().join('|') + '#' + sysFeed.length;
+  if (!full && sig===lastSig && !fresh.length) return;      // không có gì thay đổi
+  lastSig = sig;
+  discovered = new Map(); diag = { total:todayOrders.length, skipped:0, viaSeller:0 };
+  todayOrders.forEach(o=>{ discover(o); const { s, via } = staffForOrder(o); if (!s) diag.skipped++; else if (via==='seller') diag.viaSeller++; });
+  autoAvatars();
+  animIds = new Set(fresh.map(x=>String(x.o.id)));
+  animIds.forEach(id=>freshAt.set(id, Date.now()));
+  aggregate(); rebuildFeed();
+  renderAll(!firstLoad && fresh.length>0);
+  animIds = new Set();
+  fresh.sort((a,b)=>parseTs(a.o.inserted_at)-parseTs(b.o.inserted_at)).slice(-4)
+    .forEach((x,i)=>setTimeout(()=>announce(x.s, x.o), i*1600));
+  firstLoad = false;
+}
+// Đồng bộ đầy đủ đơn hôm nay (mỗi 60 giây)
+async function syncToday(forceMonth){
+  if (!mode) return;
+  if (loading){ setTimeout(()=>syncToday(forceMonth), 1500); return; }
+  loading = true; $('#simBtn').classList.add('opacity-60');
+  try {
+    const now = Date.now(), ds = vnDayStart(now);
+    if (ds !== dayStart){ seen = new Map(); firstLoad = true; sysFeed = []; todayMap = new Map(); dayStart = ds; }
+    ingest(await fetchOrders(ds, now, 'hôm nay'), true);
+  } catch(e){
+    lastError = e.message || String(e); setBanner('err', lastError);
+  } finally {
+    loading = false; $('#simBtn').classList.remove('opacity-60'); updRefreshLbl();
+    if (!$('#modal').classList.contains('hidden')) renderSettings();
+  }
+}
+// Kiểm tra nhanh đơn mới nhất (mỗi 10 giây hoặc ngay khi webhook báo)
+async function quickSync(){
+  if (loading || !mode || firstLoad) return;
+  if (vnDayStart() !== dayStart) return syncToday(false);
+  loading = true;
+  try {
+    const now = Date.now(), ds = dayStart;
+    const j = await fetchPage(ds, now, 1, 30);
+    const list = [...(j.data || [])], tp = Number(j.total_pages) || 1;
+    if (tp > 1){ const j2 = await fetchPage(ds, now, tp, 30); list.push(...(j2.data || [])); }   // phủ cả 2 kiểu sắp xếp
+    ingest(list, false);
+  } catch(e){
+    lastError = e.message || String(e); setBanner('err', lastError);
+  } finally { loading = false; updRefreshLbl(); }
+}
+// ---------- AVATAR ----------
+// Nhân sự chưa có ảnh: lấy ảnh đại diện của tài khoản Pancake (nếu đơn hàng có kèm)
+function autoAvatars(){
+  let changed = false;
+  staff.forEach(s=>{
+    if (!s.uuid || cfg.avatars[s.key]) return;
+    const d = discovered.get(String(s.uuid));
+    if (d && d.avatar){ cfg.avatars[s.key] = d.avatar; changed = true; }
+  });
+  if (changed) store.set('olh_cfg_v1', cfg);
+}
+const avBroken = new Set();
+function avatarHTML(s, px){
+  const url = cfg.avatars[s.key];
+  if (url && !avBroken.has(url))
+    return `<img src="${esc(url)}" alt="${esc(s.full)}" loading="lazy" style="width:${px}px;height:${px}px" onerror="avFail(this,'${s.id}',${px})">`;
+  return avatarSVG(s).replace('<svg', `<svg style="width:${px}px;height:${px}px"`);
+}
+function avFail(img, id, px){
+  avBroken.add(img.getAttribute('src'));
+  const s = staff.find(x=>x.id===id); if (s) img.outerHTML = avatarHTML(s, px);
+}
+function pickAvatar(key){
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = () => {
+    const f = inp.files && inp.files[0]; if (!f) return;
+    const img = new Image(), url = URL.createObjectURL(f);
+    img.onload = () => {
+      const c = document.createElement('canvas'), S = 160; c.width = c.height = S;
+      const k = Math.max(S/img.width, S/img.height), w = img.width*k, h = img.height*k;
+      c.getContext('2d').drawImage(img, (S-w)/2, (S-h)/2, w, h);
+      cfg.avatars[key] = c.toDataURL('image/jpeg', .86); URL.revokeObjectURL(url);
+      store.set('olh_cfg_v1', cfg); renderSettings(); renderAll(false);
+    };
+    img.src = url;
+  };
+  inp.click();
+}
+function announce(s, o){
+  const net = orderNet(o);
+  celebrate(s, net, pick(CHEERS[s.dept]));
+  toast(s, net, `Đơn #${o.id}`, orderSource(o));
+  renderList(s.id);
+}
+function renderAll(pop){
+  staff.forEach(updateChar); renderOverlayTags();
+  renderKPIs(pop); renderCounts(); renderList(); renderFeed(); renderTicker();
+  if (rightTab==='board') renderBoard();
+  if (selectedId) renderCard();
+  applyFilter(); refreshTV();
+}
+function renderOverlayTags(){
+  staff.forEach(s=>{ const t = document.getElementById('tag-'+s.id); if (t){ t.querySelector('.o').textContent = s.uuid ? s.orders+' đơn' : 'chưa gán'; } });
+}
+function manualRefresh(){ syncToday(false); }
+
+// ---------- TEST / WEBHOOK (chỉ hiệu ứng, số liệu luôn lấy từ POS) ----------
+function testEffect(){
+  const pool = staff.filter(s=>s.uuid).length ? staff.filter(s=>s.uuid) : staff;
+  const s = pick(pool);
+  testOrder(s.dept, s.id);
+}
+function testOrder(dept, id){
+  const s = id ? staff.find(x=>x.id===id) : pick(staff.filter(x=>x.dept===dept));
+  const amt = dept==='sale' ? 2500000 : 1800000;
+  celebrate(s, amt, 'Thử hiệu ứng');
+  toast(s, amt, 'Thử hiệu ứng · không tính doanh thu', 'Test');
+}
+window.receivePosOrder = function(data = {}){
+  const n = norm(data.staff), byId = data.uuid && byUuid.get(String(data.uuid));
+  const s = byId || staff.find(x=>norm(x.full)===n || norm(x.name)===n) || pick(staff.filter(x=>x.dept===(norm(data.department).includes('cskh')?'cskh':'sale')));
+  const amt = Math.round(Number(data.amount)||0);
+  celebrate(s, amt, data.message || pick(CHEERS[s.dept])); toast(s, amt, data.message || 'Webhook', data.source || 'POS');
+  setTimeout(()=>syncToday(false), 2500);   // doanh thu được cập nhật lại từ POS, không cộng tay
+  return { ok:true, staff:s.full, note:'Doanh thu đồng bộ lại từ Pancake POS' };
+};
+window.addEventListener('message', e=>{ const d = e.data; if (d && typeof d==='object' && d.type==='pos-order') window.receivePosOrder(d.data || d.payload || {}); });
+
+// ---------- SETTINGS (Kết nối POS) ----------
+function parseStaffJson(txt){
+  const j = JSON.parse(txt), out = [];
+  const walk = (v, team) => {
+    if (Array.isArray(v)) return v.forEach(x=>walk(x, team));
+    if (!v || typeof v!=='object') return;
+    const id = v.id || v.uuid || v.user_id, nm = v.name || v.full_name;
+    if (id && nm && /^[0-9a-f-]{16,}$/i.test(String(id))){
+      const t = norm(v.team || v.dept || v.department || team || '');
+      out.push({ id:String(id), name:nm, alias:v.alias||'', avatar:v.avatar||v.avatar_url||v.image||'', dept: t.includes('cskh') ? 'cskh' : t.includes('sale') ? 'sale' : null });
+    } else Object.entries(v).forEach(([k,x])=>{ if (!k.startsWith('_')) walk(x, /cskh|care/i.test(k) ? 'cskh' : /sale/i.test(k) ? 'sale' : team); });
+  };
+  walk(j, null);
+  return out;
+}
+function applyStaffJson(list, onlyEmpty){
+  let n = 0;
+  list.forEach(e=>{
+    const keys = [norm(e.name), norm(e.alias)].filter(Boolean);
+    const d = DEFAULT_STAFF.find(d=>keys.includes(norm(d.name)) || keys.includes(norm(d.short)));
+    if (!d || (e.dept && e.dept!==d.dept)) return;
+    if (e.avatar && (!onlyEmpty || !cfg.avatars[d.key])) cfg.avatars[d.key] = e.avatar;
+    if (onlyEmpty && cfg.ids[d.key]) return;
+    cfg.ids[d.key] = e.id; n++;
+  });
+  return n;
+}
+async function tryLoadStaffJson(){
+  try { const r = await fetch(mode==='vercel' ? 'api/staff' : 'staff.json', { cache:'no-store' }); if (!r.ok) return 0;
+    const n = applyStaffJson(parseStaffJson(await r.text()), mode!=='vercel');   // trên Vercel: danh sách server là chuẩn
+    store.set('olh_cfg_v1', cfg);
+    if (n){ store.set('olh_cfg_v1', cfg); rebuildIndex(); pushSys(`Đã nạp UUID cho ${n} nhân sự từ staff.json`); }
+    return n;
+  } catch(e){ return 0; }
+}
+function renderSettings(){
+  const disc = [...discovered.values()].sort((a,b)=>b.count-a.count);
+  const mapped = new Set(staff.map(s=>s.uuid).filter(Boolean));
+  const modeTxt = mode==='vercel' ? '<span class="text-emerald-400 font-bold">● Đang chạy trên Vercel</span> · API key nằm trên server, danh sách nhân sự lấy từ staff.json của server.'
+    : mode==='proxy' ? '<span class="text-emerald-400 font-bold">● Đang chạy qua pos-proxy.py</span> · API key nằm ở máy chạy proxy, không gửi xuống trình duyệt.'
+    : mode==='direct' ? '<span class="text-amber-400 font-bold">● Gọi thẳng Pancake từ trình duyệt</span> · API key lưu trong trình duyệt này.'
+    : '<span class="text-red-400 font-bold">● Chưa kết nối</span> · Nên chạy <span class="mono">pos-proxy.py</span> rồi mở http://localhost:8080.';
+  $('#setBody').innerHTML = `
+    <div class="text-[13px] leading-relaxed muted">${modeTxt}</div>
+    ${lastError?`<div class="mt-2 text-[12.5px] text-red-300 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">${esc(lastError)}</div>`:''}
+    <div class="grid grid-cols-2 gap-2.5 mt-3">
+      <label class="text-[12px] muted">Shop ID<input id="fShop" class="inp mono mt-1" value="${esc(cfg.shopId)}"></label>
+      ${mode==='proxy' || mode==='vercel' ? `<div class="text-[12px] muted">Đồng bộ<div class="inp mt-1 !text-slate-300">${lastSync?'Lần cuối '+hhmm(lastSync)+' · mỗi 60 giây':'Chưa đồng bộ'}</div></div>`
+        : `<label class="text-[12px] muted">Pancake API key<input id="fKey" type="password" class="inp mono mt-1" value="${esc(cfg.apiKey)}" placeholder="dán API key"></label>`}
+    </div>
+    <div class="mt-4 flex items-center justify-between"><div class="text-[13px] font-bold">Gán UUID cho 2 team</div>
+      <div class="text-[11.5px] muted">Bấm ảnh để đổi avatar · chỉ đơn của 10 người này được tính</div></div>
+    <datalist id="discList">${disc.map(d=>`<option value="${esc(d.id)}">${esc(d.name)} · ${d.count} đơn hôm nay</option>`).join('')}</datalist>
+    <div class="grid sm:grid-cols-2 gap-2 mt-2">${staff.map(s=>`
+      <label class="flex items-center gap-2 bg-[#171a22] border border-[#2c3240] rounded-xl px-2.5 py-2">
+        <button type="button" class="avatar !w-9 !h-9 flex-none relative group" title="Đổi ảnh đại diện" onclick="pickAvatar('${s.key}')">${avatarHTML(s,36)}<span class="absolute inset-0 rounded-full bg-black/55 hidden group-hover:grid place-items-center text-[13px]"><i data-lucide="camera"></i></span></button>
+        <span class="badge b-${s.dept} flex-none">${TEAM[s.dept].name}</span>
+        <span class="text-[12.5px] font-semibold w-[92px] flex-none truncate" title="${esc(s.full)}${s.note?' · '+esc(s.note):''}">${esc(s.full)}</span>
+        <input class="inp mono !py-1.5 !text-[11.5px]" list="discList" data-key="${s.key}" value="${esc(cfg.ids[s.key]||'')}" placeholder="UUID nhân sự">
+      </label>`).join('')}</div>
+    <details class="mt-3"><summary class="text-[12.5px] font-semibold cursor-pointer text-amber-300">Nhập từ staff.json</summary>
+      <textarea id="fJson" class="inp mono mt-2 !text-[11.5px]" rows="4" placeholder="Dán nội dung staff.json của dự án Enzy vào đây"></textarea>
+      <button class="chip mt-2" onclick="importJson()"><i data-lucide="file-json"></i>Nhập UUID</button></details>
+    <div class="mt-4 text-[13px] font-bold">Tài khoản xuất hiện trong đơn hôm nay</div>
+    <div class="mt-1.5 max-h-[160px] overflow-y-auto scroll-thin text-[12px] border border-[#2c3240] rounded-xl">
+      ${disc.length ? disc.map(d=>`<div class="flex items-center gap-2 px-3 py-1.5 border-b border-[#232836] last:border-0">
+          <span class="${mapped.has(d.id)?'text-emerald-400':'text-slate-500'}">${mapped.has(d.id)?'✓':'○'}</span>
+          ${d.avatar ? `<img src="${esc(d.avatar)}" class="w-5 h-5 rounded-full object-cover flex-none" onerror="this.style.display='none'">` : '<span class="w-5 h-5 rounded-full bg-[#2a2f3c] flex-none"></span>'}
+          <span class="font-semibold w-[140px] truncate">${esc(d.name)}</span><span class="mono muted flex-1 truncate">${esc(d.id)}</span>
+          <span class="mono muted">${d.count}</span></div>`).join('') : '<div class="px-3 py-3 muted">Chưa có dữ liệu. Kết nối xong sẽ hiện ở đây để chọn UUID.</div>'}
+    </div>
+    <div class="mt-3 text-[11.5px] muted mono leading-relaxed">Avatar từ Pancake: ${disc.filter(d=>d.avatar).length}/${disc.length} tài khoản có ảnh · Trường dữ liệu tài khoản: ${personKeys.size ? esc([...personKeys].join(', ')) : '—'}</div>
+    <div class="mt-1 text-[11.5px] muted mono">Hôm nay: ${diag.total} đơn · ngoài 2 team (bỏ qua): ${diag.skipped} · gán qua assigning_seller: ${diag.viaSeller}</div>
+    <button class="btn-glow btn-sale mt-4 w-full justify-center" onclick="saveSettings()"><i data-lucide="save"></i>Lưu &amp; tải lại số liệu</button>`;
+  icons();
+}
+function importJson(){
+  try { const n = applyStaffJson(parseStaffJson($('#fJson').value), false); store.set('olh_cfg_v1', cfg); renderSettings(); pushSys(`Đã nhập UUID cho ${n} nhân sự`); }
+  catch(e){ alert('staff.json không hợp lệ: '+e.message); }
+}
+async function saveSettings(){
+  cfg.shopId = ($('#fShop').value || SHOP_ID_DEFAULT).trim();
+  if ($('#fKey')) cfg.apiKey = $('#fKey').value.trim();
+  $$('#setBody input[data-key]').forEach(i=>{ const v = i.value.trim(); if (v) cfg.ids[i.dataset.key] = v; else delete cfg.ids[i.dataset.key]; });
+  store.set('olh_cfg_v1', cfg); rebuildIndex();
+  if (!mode || mode==='direct') mode = await detectMode();
+  closeModal();
+  seen = new Map(); firstLoad = true; monthBase = null;
+  renderAll(false);
+  if (mode){ await syncToday(true); startPolling(); } else setBanner('err', 'Chưa kết nối Pancake POS: bấm để cài đặt');
+}
+function openModal(){ $('#modal').classList.remove('hidden'); renderSettings(); }
+function closeModal(){ $('#modal').classList.add('hidden'); }
+document.addEventListener('keydown', e=>{ if (e.key==='Escape'){ closeModal(); closeCard(); } });
+
+// ---------- ĐĂNG NHẬP (chỉ khi server đặt mật khẩu) ----------
+function showLogin(){
+  if (document.getElementById('loginBox')) return;
+  const d = document.createElement('div');
+  d.id = 'loginBox'; d.className = 'fixed inset-0 modal-bg z-[60] grid place-items-center p-4';
+  d.innerHTML = `<form class="card w-full max-w-[360px] p-6" onsubmit="doLogin(event)">
+      <div class="text-[18px] font-bold flex items-center gap-2"><span class="text-amber-400"><i data-lucide="lock"></i></span>Office Live Hub</div>
+      <div class="text-[13px] muted mt-1">Đăng nhập để xem văn phòng Sale &amp; CSKH</div>
+      <input id="lgU" class="inp mt-4" placeholder="Tài khoản" autocomplete="username">
+      <input id="lgP" class="inp mt-2" type="password" placeholder="Mật khẩu" autocomplete="current-password">
+      <div id="lgErr" class="text-[12.5px] text-red-400 mt-2 hidden"></div>
+      <button class="btn-glow btn-sale w-full justify-center mt-4">Đăng nhập</button></form>`;
+  document.body.appendChild(d); icons();
+}
+async function doLogin(e){
+  e.preventDefault();
+  const r = await fetch('api/login', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ user:$('#lgU').value, pass:$('#lgP').value }) });
+  if (r.ok) location.reload(); else { $('#lgErr').textContent = 'Sai tài khoản hoặc mật khẩu'; $('#lgErr').classList.remove('hidden'); }
+}
+
+// ---------- CLOCK ----------
+function tick(){
+  const d = new Date();
+  $('#clock').textContent = d.toLocaleTimeString('vi-VN', { hour12:false, timeZone:'Asia/Ho_Chi_Minh' });
+  if (d.getSeconds()===0) updateWallClock();
+}
+
+// ---------- INIT ----------
+let pollTimer = null;
+let quickTimer = null, es = null;
+function startPolling(){
+  if (!pollTimer) pollTimer = setInterval(()=>syncToday(false), POLL_MS);
+  if (!quickTimer) quickTimer = setInterval(quickSync, QUICK_MS);
+  if (mode==='proxy' && !es && window.EventSource){
+    try { es = new EventSource('pos-events'); es.onmessage = () => quickSync(); } catch(e){}
+  }
+}
+async function init(){
+  rebuildIndex(); assignSeats(); buildScene();
+  aggregate(); renderAll(false);
+  resizeFx(); focusPreset('all', false); icons();
+  tick(); setInterval(tick, 1000);
+  if (document.fonts?.ready) document.fonts.ready.then(()=>{ focusPreset(currentView,false); renderTicker(); });
+  mode = await detectMode();
+  if (mode==='vercel' && needLogin){ showLogin(); return; }
+  if (mode==='vercel' || (mode==='proxy' && !Object.keys(cfg.ids).length)) await tryLoadStaffJson();
+  renderAll(false);
+  if (!mode){ setBanner('err', 'Chưa kết nối Pancake POS: bấm để cài đặt'); openModal(); return; }
+  await syncToday(false); startPolling();
+  if (!staff.some(s=>s.uuid)) openModal();
+}
+init();
+</script>
+</body>
+</html>

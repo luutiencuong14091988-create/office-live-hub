@@ -1,0 +1,35 @@
+OFFICE LIVE HUB - DEPLOY LÊN VERCEL (không cần Terminal)
+=========================================================
+
+Thư mục này là một dự án Vercel riêng (không liên quan dự án Enzy Dashboard).
+API key Pancake chỉ nằm trên server Vercel, không xuống trình duyệt.
+Server chỉ ĐỌC đơn hôm nay và đã lọc bỏ thông tin khách hàng (tên, SĐT, địa chỉ).
+
+BƯỚC 1 - Tạo repo GitHub
+  1. Vào https://github.com/new
+  2. Repository name: office-live-hub   ·  chọn Private  ·  bấm Create repository
+  3. Bấm "uploading an existing file", kéo TẤT CẢ file và thư mục trong gói này
+     (index.html, staff.json, vercel.json, .vercelignore, thư mục api, thư mục lib) vào
+  4. Bấm Commit changes
+
+BƯỚC 2 - Import vào Vercel
+  1. Vào https://vercel.com/new  ·  chọn repo office-live-hub  ·  bấm Import
+  2. Framework Preset: Other  ·  để trống Build Command / Output Directory
+  3. Mở "Environment Variables", thêm:
+       PANCAKE_API_KEY = (API key Pancake POS còn hiệu lực)
+       SHOP_ID         = 1290006440            (không bắt buộc, mặc định đã là số này)
+  4. Bấm Deploy. Xong sẽ có link dạng https://office-live-hub-xxxx.vercel.app
+
+=> Ai có link đều xem được. Trang không hiện trên Google (noindex).
+
+TUỲ CHỌN - Bắt đăng nhập
+  Vercel > Project > Settings > Environment Variables, thêm:
+       DASHBOARD_USER     = tên đăng nhập chung của team
+       DASHBOARD_PASSWORD = mật khẩu
+       COOKIE_SECRET      = một chuỗi ngẫu nhiên dài bất kỳ
+  rồi Deployments > ... > Redeploy. Bỏ DASHBOARD_PASSWORD là quay lại xem tự do.
+
+THÊM / SỬA NHÂN SỰ
+  Sửa file staff.json trên GitHub (UUID lấy ở bảng 🔌 của trang) > Commit.
+  Vercel tự deploy lại trong khoảng 1 phút.
+  Hiện còn thiếu UUID của Hay (tài khoản buithi, Leader CSKH).
