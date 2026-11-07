@@ -1,0 +1,4 @@
+.env*
+*.py
+*.command
+dev-server.js
